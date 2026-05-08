@@ -2,3 +2,10 @@
 node_modules/
 *.log
 .DS_Store
+*.webloc
+*.zip
+*.html.gz
+Claude Code.html
+Claude Code_files/
+.claude/
+taxoptim/.claude/
