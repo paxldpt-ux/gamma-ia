@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gamma IA — Optimisation Fiscale</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      --accent: #6e9ab5;
+      --accent-light: #a2bfd4;
+      --accent-dark: #3d6f8a;
+      --bg: #050a12;
+      --text: #edf2ff;
+      --muted: #6b7fa0;
+      --glass: rgba(255,255,255,0.03);
+      --border: rgba(110,154,181,0.12);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 3.5rem;
+      transition: background 0.4s, border-color 0.4s;
+    }
+
+    nav.scrolled {
+      background: rgba(5,10,18,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-gold {
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    .nav-link {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-link:hover { color: var(--accent-light); }
+
+    .contact-wrap {
+      position: relative;
+    }
+
+    .contact-dropdown {
+      position: absolute;
+      top: calc(100% + 0.75rem);
+      right: 0;
+      background: none;
+      border: none;
+      padding: 0.25rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(-6px);
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .contact-wrap:hover .contact-dropdown {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .contact-dropdown a {
+      font-size: 0.78rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+    }
+
+    .contact-dropdown a:hover { color: var(--accent-light); }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 7rem 2rem 5rem;
+    }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.75rem;
+      opacity: 0;
+      animation: up 0.8s ease 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: up 0.9s ease 0.35s forwards;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      max-width: 520px;
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--muted);
+      margin-bottom: 4rem;
+      opacity: 0;
+      animation: up 0.9s ease 0.5s forwards;
+    }
+
+    /* TWO CARDS */
+    .cards {
+      display: flex;
+      gap: 1.5rem;
+      opacity: 0;
+      animation: up 1s ease 0.7s forwards;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      width: 280px;
+      padding: 2.5rem 2rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+      text-align: left;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(110,154,181,0.35);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 40px rgba(110,154,181,0.07);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      background: rgba(110,154,181,0.08);
+      border: 1px solid rgba(110,154,181,0.15);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--muted);
+      margin-bottom: 1.75rem;
+    }
+
+    .card-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      transition: gap 0.3s;
+    }
+
+    .card:hover .card-arrow { gap: 0.7rem; }
+
+    /* SUBTLE DIVIDER */
+    .divider {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0 3.5rem;
+      margin-bottom: 5rem;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    .divider-text {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* WHY SECTION */
+    .why {
+      position: relative;
+      z-index: 10;
+      padding: 0 3.5rem 7rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .why-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .why-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .why-sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .pillar {
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s;
+    }
+
+    .pillar.visible { opacity: 1; transform: translateY(0); }
+    .pillar:hover { border-color: rgba(110,154,181,0.25); }
+
+    .pillar-icon { font-size: 1.3rem; margin-bottom: 1rem; }
+
+    .pillar-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .pillar-desc {
+      font-size: 0.83rem;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 10;
+      padding: 1.75rem 3.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    @keyframes up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* TICKER */
+    .ticker-wrap {
+      margin: 0.75rem 0 1.75rem;
+      height: 1.4rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ticker {
+      font-size: 0.75rem;
+      color: var(--accent-light);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      transition: opacity 0.5s, transform 0.5s;
+    }
+
+    .ticker.fade-out { opacity: 0; transform: translateY(-8px); }
+    .ticker.fade-in  { opacity: 0; transform: translateY(8px); }
+    .ticker.visible  { opacity: 1; transform: translateY(0); }
+
+    .card-agent .card-desc { display: none; }
+
+    @media (max-width: 700px) {
+      nav { padding: 1.25rem 1.5rem; }
+      .nav-right { display: none; }
+      .hero { padding: 6rem 1.5rem 4rem; }
+      .pillars { grid-template-columns: 1fr; }
+      .why, .divider { padding-left: 1.5rem; padding-right: 1.5rem; }
+      footer { flex-direction: column; gap: 0.75rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<nav id="nav">
+  <div class="logo"><span class="logo-gold">Gamma</span> IA</div>
+  <div class="nav-right">
+    <a class="nav-link" href="#">À propos</a>
+    <div class="contact-wrap">
+      <a class="nav-link" href="#">Contact</a>
+      <div class="contact-dropdown">
+        <a href="tel:+33749264462">📞 +33 7 49 26 44 62</a>
+        <a href="mailto:paxl.dpt@gmail.com">✉️ paxl.dpt@gmail.com</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <p class="eyebrow">Optimisation fiscale · Intelligence artificielle</p>
+  <h1 class="hero-title">
+    Votre fiscalité,<br><em>optimisée.</em>
+  </h1>
+  <p class="hero-sub">
+    Découvrez les outils adaptés à votre situation fiscale, particulier ou professionnel.
+  </p>
+
+  <div class="cards">
+    <a class="card" href="estimation.html">
+      <div class="card-icon">📊</div>
+      <div class="card-label">Simulation</div>
+      <h2 class="card-title">Estimation de son imposition optimisée</h2>
+      <p class="card-desc">Calculez votre charge fiscale réelle et identifiez les leviers d'économie selon votre profil.</p>
+      <span class="card-arrow">Lancer l'estimation <span>→</span></span>
+    </a>
+
+    <a class="card card-agent" href="agent-conseil.html">
+      <div class="card-icon">🤖</div>
+      <div class="card-label">Intelligence artificielle</div>
+      <h2 class="card-title">Agent de conseil fiscal personnalisé</h2>
+      <div class="ticker-wrap">
+        <div class="ticker" id="ticker"></div>
+      </div>
+      <span class="card-arrow">Consulter l'agent <span>→</span></span>
+    </a>
+  </div>
+</section>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <span class="divider-text">Pourquoi Gamma IA</span>
+  <div class="divider-line"></div>
+</div>
+
+<div class="why">
+  <div class="pillars" id="pillars">
+    <div class="pillar">
+      <div class="pillar-icon">⚡</div>
+      <h3 class="pillar-title">Analyse instantanée</h3>
+      <p class="pillar-desc">Notre IA parcourt plus de 2 000 dispositifs fiscaux et identifie les opportunités adaptées à votre profil en quelques secondes.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🔒</div>
+      <h3 class="pillar-title">100 % légal</h3>
+      <p class="pillar-desc">Chaque recommandation est validée par nos juristes. Toutes les stratégies proposées sont conformes à la législation en vigueur.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🌍</div>
+      <h3 class="pillar-title">Couverture internationale</h3>
+      <p class="pillar-desc">Traités fiscaux, holdings transfrontaliers, conventions bilatérales — nous gérons la complexité fiscale européenne et internationale.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="logo" style="font-size:1rem"><span class="logo-gold">Gamma</span> IA</div>
+  <span>© 2026 Gamma IA — Usage personnel</span>
+</footer>
+
+<script>
+// Particle canvas
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+resize();
+addEventListener('resize', resize);
+
+const mouse = { x: -999, y: -999 };
+addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+class P {
+  constructor() { this.init(true); }
+  init(rand = false) {
+    this.x = Math.random() * W;
+    this.y = rand ? Math.random() * H : H + 5;
+    this.vx = (Math.random() - 0.5) * 0.25;
+    this.vy = -(Math.random() * 0.35 + 0.08);
+    this.r = Math.random() * 1.5 + 0.4;
+    this.a = Math.random() * 0.35 + 0.08;
+    this.t = Math.random() * Math.PI * 2;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy; this.t += 0.018;
+    if (this.y < -10) this.init();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(110,154,181,${this.a + Math.sin(this.t) * 0.06})`;
+    ctx.fill();
+  }
+}
+
+const pts = Array.from({ length: 55 }, () => new P());
+
+function frame() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Subtle bg glow
+  const g = ctx.createRadialGradient(W * .25, H * .35, 0, W * .25, H * .35, W * .65);
+  g.addColorStop(0, 'rgba(8,20,50,0.7)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  pts.forEach(p => {
+    p.update(); p.draw();
+    // connections
+    pts.forEach(q => {
+      const dx = p.x - q.x, dy = p.y - q.y, d = Math.hypot(dx, dy);
+      if (d < 130 && d > 0) {
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+        ctx.strokeStyle = `rgba(110,154,181,${(1 - d / 130) * 0.1})`;
+        ctx.lineWidth = 0.5; ctx.stroke();
+      }
+    });
+    // mouse
+    const md = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+    if (md < 110) {
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
+      ctx.strokeStyle = `rgba(110,154,181,${(1 - md / 110) * 0.28})`;
+      ctx.lineWidth = 0.7; ctx.stroke();
+    }
+  });
+
+  requestAnimationFrame(frame);
+}
+frame();
+
+// Nav scroll
+addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', scrollY > 40);
+});
+
+// Ticker
+const phrases = ['Optimiser un projet', 'Choisir la bonne forme sociale', 'Montage fiscal'];
+let ti = 0;
+const ticker = document.getElementById('ticker');
+ticker.textContent = phrases[0];
+ticker.classList.add('visible');
+setInterval(() => {
+  ticker.classList.remove('visible');
+  ticker.classList.add('fade-out');
+  setTimeout(() => {
+    ti = (ti + 1) % phrases.length;
+    ticker.textContent = phrases[ti];
+    ticker.classList.remove('fade-out');
+    ticker.classList.add('fade-in');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      ticker.classList.remove('fade-in');
+      ticker.classList.add('visible');
+    }));
+  }, 500);
+}, 2200);
+
+// Pillar reveal
+const io = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), Array.from(document.querySelectorAll('.pillar')).indexOf(e.target) * 120);
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('.pillar').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gamma IA — Analyse Entreprises</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      --accent: #6e9ab5;
+      --accent-light: #a2bfd4;
+      --bg: #050a12;
+      --text: #edf2ff;
+      --muted: #6b7fa0;
+      --border: rgba(110,154,181,0.12);
+      --glass: rgba(255,255,255,0.03);
+      --accent-bg: rgba(110,154,181,0.06);
+      --blue: rgba(80,140,255,0.08);
+      --blue-border: rgba(80,140,255,0.2);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 3.5rem;
+      background: rgba(5,10,18,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo-gold {
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.3s;
+    }
+
+    .nav-back:hover { color: var(--accent-light); }
+
+    .nav-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      border: 1px solid var(--blue-border);
+      background: var(--blue);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #7ab0ff;
+    }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 8rem 3.5rem 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      opacity: 0;
+      animation: up 0.8s ease 0.1s forwards;
+    }
+
+    .breadcrumb {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #7ab0ff;
+      margin-bottom: 1.25rem;
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4.5vw, 3.5rem);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1.08;
+      margin-bottom: 1rem;
+    }
+
+    .page-title em {
+      font-style: normal;
+      background: linear-gradient(135deg, #a0c4ff, #5090ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-sub {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 520px;
+    }
+
+    /* LAYOUT */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 3.5rem 5rem;
+    }
+
+    /* SECTION BLOCKS */
+    .section-block {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .section-block.visible { opacity: 1; transform: translateY(0); }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.25rem 1.75rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.3s;
+    }
+
+    .section-head:hover { background: var(--accent-bg); }
+
+    .section-head-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      background: var(--blue);
+      border: 1px solid var(--blue-border);
+      flex-shrink: 0;
+    }
+
+    .section-head-text { flex: 1; }
+
+    .section-head-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .section-head-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    .section-chevron {
+      font-size: 0.75rem;
+      color: var(--muted);
+      transition: transform 0.3s;
+    }
+
+    .section-block.open .section-chevron { transform: rotate(180deg); }
+
+    .section-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .section-block.open .section-body { max-height: 900px; }
+
+    .section-inner { padding: 1.5rem 1.75rem; }
+
+    /* FORM */
+    .field-group { margin-bottom: 1.25rem; }
+
+    .field-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.45rem;
+    }
+
+    .field-input, .field-select {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+      appearance: none;
+    }
+
+    .field-input:focus, .field-select:focus {
+      border-color: rgba(80,140,255,0.4);
+      background: rgba(80,140,255,0.04);
+    }
+
+    .field-select option { background: #0d1526; color: var(--text); }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .field-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+      line-height: 1.5;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.45rem;
+    }
+
+    .chip {
+      padding: 0.35rem 0.85rem;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.25s;
+      user-select: none;
+    }
+
+    .chip:hover { border-color: rgba(80,140,255,0.3); color: #a0c4ff; }
+    .chip.active { border-color: #5090ff; background: rgba(80,140,255,0.12); color: #a0c4ff; }
+
+    /* INFO BOX */
+    .info-box {
+      padding: 0.9rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--blue-border);
+      background: var(--blue);
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: #8ab8ff;
+      margin-bottom: 1.25rem;
+    }
+
+    /* SIDEBAR */
+    .sidebar { position: sticky; top: 6rem; align-self: start; }
+
+    .result-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .result-head {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .result-head-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .result-head-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #7ab0ff;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      background: var(--blue);
+      border: 1px solid var(--blue-border);
+    }
+
+    .result-body { padding: 1.5rem; }
+
+    .result-amount {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #a0c4ff, #5090ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .result-sublabel { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.04em; }
+    .result-divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0;
+    }
+
+    .result-row-label { font-size: 0.8rem; color: var(--muted); }
+    .result-row-value { font-size: 0.85rem; font-weight: 600; }
+    .result-row-value.positive { color: #5dca8a; }
+
+    /* LEVERS */
+    .lever-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .lever-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.02);
+      transition: all 0.3s;
+    }
+
+    .lever-item:hover { border-color: var(--border); background: var(--accent-bg); }
+
+    .lever-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .lever-dot.high { background: #5dca8a; box-shadow: 0 0 6px rgba(93,202,138,0.5); }
+    .lever-dot.mid  { background: var(--accent-bg); box-shadow: 0 0 6px rgba(110,154,181,0.4); }
+    .lever-dot.low  { background: #6b7fa0; }
+
+    .lever-text { flex: 1; }
+    .lever-name { font-size: 0.82rem; font-weight: 500; }
+    .lever-save { font-size: 0.75rem; color: var(--muted); }
+    .lever-gain { font-size: 0.78rem; font-weight: 600; color: #5dca8a; white-space: nowrap; }
+
+    /* BUTTONS */
+    .btn-analyze {
+      width: 100%;
+      padding: 0.9rem;
+      border-radius: 8px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #a0c4ff, #5090ff);
+      color: #050a12;
+      letter-spacing: 0.03em;
+      transition: opacity 0.3s, transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 0 30px rgba(80,140,255,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-analyze:hover {
+      opacity: 0.92;
+      transform: translateY(-2px);
+      box-shadow: 0 0 50px rgba(80,140,255,0.3);
+    }
+
+    .btn-analyze::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+
+    .btn-analyze:hover::after { transform: translateX(100%); }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.83rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      transition: all 0.3s;
+      margin-top: 0.6rem;
+    }
+
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    @keyframes up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 860px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .page-header { padding: 7rem 1.5rem 2rem; }
+      .layout { grid-template-columns: 1fr; padding: 0 1.5rem 4rem; }
+      .sidebar { position: static; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html" onclick="navigate(event,'index.html')"><span class="logo-gold">Gamma</span> IA</a>
+  <a class="nav-back" href="index.html" onclick="navigate(event,'index.html')">← Retour</a>
+  <div class="nav-badge">🏢 Entreprises</div>
+</nav>
+
+<header class="page-header">
+  <p class="breadcrumb">Gamma IA · Entreprises</p>
+  <h1 class="page-title">Optimisation fiscale<br><em>d'entreprise</em></h1>
+  <p class="page-sub">Renseignez votre structure pour identifier les leviers de réduction de l'IS, des charges et de la TVA.</p>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: FORM -->
+  <div class="form-col">
+
+    <!-- Structure juridique -->
+    <div class="section-block open" id="s1">
+      <div class="section-head" onclick="toggle('s1')">
+        <div class="section-head-icon">🏢</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Structure juridique & taille</div>
+          <div class="section-head-desc">Forme, effectif, chiffre d'affaires</div>
+        </div>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Forme juridique</label>
+              <select class="field-select" onchange="compute()">
+                <option>SAS / SASU</option>
+                <option>SARL / EURL</option>
+                <option>SA</option>
+                <option>SCI</option>
+                <option>Micro-entreprise</option>
+                <option>EI / EIRL</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Régime d'imposition</label>
+              <select class="field-select" onchange="compute()">
+                <option>Impôt sur les Sociétés (IS)</option>
+                <option>Impôt sur le Revenu (IR)</option>
+                <option>Micro-fiscal</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Chiffre d'affaires annuel (€)</label>
+              <input id="ca" class="field-input" type="number" placeholder="ex : 800 000" oninput="compute()" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Résultat net avant IS (€)</label>
+              <input id="resultat" class="field-input" type="number" placeholder="ex : 120 000" oninput="compute()" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Effectif (ETP)</label>
+              <select class="field-select" onchange="compute()">
+                <option value="1">1 (solo)</option>
+                <option value="5">2–9</option>
+                <option value="15">10–49</option>
+                <option value="75">50–249</option>
+                <option value="500">250+</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Secteur d'activité</label>
+              <select class="field-select" onchange="compute()">
+                <option>Tech / Numérique</option>
+                <option>Commerce</option>
+                <option>Industrie</option>
+                <option>Services B2B</option>
+                <option>Professions libérales</option>
+                <option>Immobilier</option>
+                <option>Autre</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IS & Charges -->
+    <div class="section-block" id="s2">
+      <div class="section-head" onclick="toggle('s2')">
+        <div class="section-head-icon">📊</div>
+        <div class="section-head-text">
+          <div class="section-head-title">IS & Optimisation du résultat</div>
+          <div class="section-head-desc">Rémunération dirigeant, dividendes, provisions</div>
+        </div>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="info-box">
+            💡 En SAS/SARL, l'arbitrage rémunération / dividendes impacte directement votre IS et vos cotisations sociales. Notre IA calcule le mix optimal selon votre TMI personnel.
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Rémunération dirigeant brute (€/an)</label>
+              <input id="rem-dirigeant" class="field-input" type="number" placeholder="ex : 60 000" oninput="compute()" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Dividendes distribués (€/an)</label>
+              <input id="dividendes" class="field-input" type="number" placeholder="ex : 30 000" oninput="compute()" />
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Dispositifs déjà utilisés</label>
+            <div class="chips" id="chips-is">
+              <div class="chip" onclick="toggleMulti(this);compute()">Holding</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Intégration fiscale</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Provisions réglementées</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Amortissement accéléré</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Report déficitaire</div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Déficit reportable disponible (€)</label>
+            <input id="deficit" class="field-input" type="number" placeholder="ex : 0" oninput="compute()" />
+            <p class="field-hint">Pertes antérieures non encore imputées sur le résultat</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CIR / Crédits d'impôt -->
+    <div class="section-block" id="s3">
+      <div class="section-head" onclick="toggle('s3')">
+        <div class="section-head-icon">🔬</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Crédits d'impôt & Innovation</div>
+          <div class="section-head-desc">CIR, CII, JEI, aides à l'investissement</div>
+        </div>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="info-box">
+            🔬 Le Crédit d'Impôt Recherche (CIR) est l'un des dispositifs les plus puissants — 30 % des dépenses R&D jusqu'à 100 M€. Souvent sous-utilisé, même hors secteur tech.
+          </div>
+          <div class="field-group">
+            <label class="field-label">Activités éligibles au CIR / CII</label>
+            <div class="chips" id="chips-cir">
+              <div class="chip" onclick="setChip('chips-cir',this);compute()">Oui, déjà déclaré</div>
+              <div class="chip active" onclick="setChip('chips-cir',this);compute()">Oui, non déclaré</div>
+              <div class="chip" onclick="setChip('chips-cir',this);compute()">Incertain</div>
+              <div class="chip" onclick="setChip('chips-cir',this);compute()">Non</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Dépenses R&D annuelles (€)</label>
+              <input id="rd-depenses" class="field-input" type="number" placeholder="ex : 80 000" oninput="compute()" />
+              <p class="field-hint">Salaires chercheurs, sous-traitance, brevets…</p>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Investissements matériels (€/an)</label>
+              <input id="investissements" class="field-input" type="number" placeholder="ex : 40 000" oninput="compute()" />
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Statuts & labels obtenus</label>
+            <div class="chips" id="chips-labels">
+              <div class="chip" onclick="toggleMulti(this);compute()">JEI (Jeune Entreprise Innovante)</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">French Tech</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">BPI Lab</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TVA & Charges sociales -->
+    <div class="section-block" id="s4">
+      <div class="section-head" onclick="toggle('s4')">
+        <div class="section-head-icon">⚖️</div>
+        <div class="section-head-text">
+          <div class="section-head-title">TVA & Charges sociales</div>
+          <div class="section-head-desc">Régime TVA, optimisation des cotisations</div>
+        </div>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Régime TVA actuel</label>
+              <select class="field-select" onchange="compute()">
+                <option>Réel normal (mensuel)</option>
+                <option>Réel simplifié (annuel)</option>
+                <option>Franchise en base</option>
+                <option>Mini-réel</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">TVA collectée annuelle (€)</label>
+              <input class="field-input" type="number" placeholder="ex : 160 000" oninput="compute()" />
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Type de dirigeant</label>
+            <div class="chips" id="chips-dirigeant">
+              <div class="chip active" onclick="setChip('chips-dirigeant',this);compute()">Président SAS (assimilé salarié)</div>
+              <div class="chip" onclick="setChip('chips-dirigeant',this);compute()">Gérant SARL majoritaire (TNS)</div>
+              <div class="chip" onclick="setChip('chips-dirigeant',this);compute()">Gérant SARL minoritaire</div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Épargne retraite entreprise</label>
+            <div class="chips" id="chips-retraite">
+              <div class="chip" onclick="toggleMulti(this);compute()">PER Entreprise</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Article 83</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Madelin</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Aucun</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- International -->
+    <div class="section-block" id="s5">
+      <div class="section-head" onclick="toggle('s5')">
+        <div class="section-head-icon">🌍</div>
+        <div class="section-head-text">
+          <div class="section-head-title">International & Groupe</div>
+          <div class="section-head-desc">Filiales, prix de transfert, conventions fiscales</div>
+        </div>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="field-group">
+            <label class="field-label">Présence internationale</label>
+            <div class="chips" id="chips-intl">
+              <div class="chip active" onclick="setChip('chips-intl',this);compute()">France uniquement</div>
+              <div class="chip" onclick="setChip('chips-intl',this);compute()">UE</div>
+              <div class="chip" onclick="setChip('chips-intl',this);compute()">Hors UE</div>
+              <div class="chip" onclick="setChip('chips-intl',this);compute()">Groupe / Holding</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">CA réalisé à l'export (€)</label>
+              <input class="field-input" type="number" placeholder="ex : 200 000" oninput="compute()" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Redevances / royalties reçues (€)</label>
+              <input class="field-input" type="number" placeholder="ex : 0" oninput="compute()" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /form-col -->
+
+  <!-- RIGHT: SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="result-card">
+      <div class="result-head">
+        <span class="result-head-title">Économies estimées</span>
+        <span class="result-head-tag" id="confidence-tag">À compléter</span>
+      </div>
+      <div class="result-body">
+        <div class="result-amount" id="savings-amount">—</div>
+        <div class="result-sublabel">d'économies potentielles / an</div>
+
+        <div class="result-divider"></div>
+
+        <div class="result-row">
+          <span class="result-row-label">IS estimé actuel</span>
+          <span class="result-row-value" id="is-current">—</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label">IS après optimisation</span>
+          <span class="result-row-value positive" id="is-after">—</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label">Taux IS effectif estimé</span>
+          <span class="result-row-value" id="taux-is">—</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label">CIR estimé</span>
+          <span class="result-row-value positive" id="cir-est">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-card" id="levers-card" style="display:none">
+      <div class="result-head">
+        <span class="result-head-title">Leviers prioritaires</span>
+      </div>
+      <div class="result-body">
+        <div class="lever-list" id="lever-list"></div>
+      </div>
+    </div>
+
+    <button class="btn-analyze" onclick="requestExpert()">Obtenir une analyse complète →</button>
+    <button class="btn-secondary" onclick="resetForm()">Réinitialiser</button>
+
+    <p style="font-size:0.68rem;color:var(--muted);text-align:center;margin-top:1rem;line-height:1.5">
+      Estimations indicatives. Consultez un expert pour une analyse certifiée et opposable à l'administration.
+    </p>
+
+  </aside>
+</div>
+
+<script>
+function navigate(e, url) {
+  e.preventDefault();
+  window.location.href = url;
+}
+
+function toggle(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function setChip(groupId, el) {
+  document.querySelectorAll('#' + groupId + ' .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleMulti(el) { el.classList.toggle('active'); }
+
+function val(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+function fmt(n) { return n.toLocaleString('fr-FR') + ' €'; }
+function chip(groupId, text) {
+  return Array.from(document.querySelectorAll('#' + groupId + ' .chip.active')).some(c => c.textContent.trim().includes(text));
+}
+
+function calcIS(resultat) {
+  if (resultat <= 0) return 0;
+  if (resultat <= 42500) return resultat * 0.15;
+  return 42500 * 0.15 + (resultat - 42500) * 0.25;
+}
+
+function compute() {
+  const ca          = val('ca');
+  const resultat    = val('resultat');
+  const remDirigeant= val('rem-dirigeant');
+  const dividendes  = val('dividendes');
+  const deficit     = val('deficit');
+  const rdDepenses  = val('rd-depenses');
+  const investiss   = val('investissements');
+
+  if (resultat <= 0) {
+    ['savings-amount','is-current','is-after','taux-is','cir-est'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+    document.getElementById('confidence-tag').textContent = 'À compléter';
+    document.getElementById('levers-card').style.display = 'none';
+    return;
+  }
+
+  // IS de base (après déficit reportable)
+  const resultatNet = Math.max(0, resultat - deficit);
+  const isBase = calcIS(resultatNet);
+  let totalSavings = 0;
+  let cirEst = 0;
+  const levers = [];
+
+  // ── CIR / CII ──
+  const cirDeclare = chip('chips-cir', 'déjà déclaré');
+  const cirNonDeclare = chip('chips-cir', 'non déclaré');
+  const cirIncertain = chip('chips-cir', 'Incertain');
+  const cirNon = chip('chips-cir', 'Non');
+
+  if (rdDepenses > 0) {
+    cirEst = Math.round(Math.min(rdDepenses, 100000000) * 0.30);
+    totalSavings += cirEst;
+    levers.push({ name: 'Crédit d\'Impôt Recherche — 30 %', save: `${fmt(rdDepenses)} de dépenses R&D éligibles`, gain: fmt(cirEst), level: 'high' });
+  } else if (cirNonDeclare || cirIncertain) {
+    const potentiel = Math.round(resultat * 0.08);
+    cirEst = potentiel;
+    totalSavings += potentiel;
+    levers.push({ name: 'CIR — potentiel non déclaré', save: 'Dépenses R&D probables à identifier et valoriser', gain: `~${fmt(potentiel)} estimés`, level: 'high' });
+  }
+
+  // ── Investissements matériels ──
+  if (investiss > 0) {
+    const amortSaving = Math.round(investiss * 0.25 * 0.25);
+    totalSavings += amortSaving;
+    levers.push({ name: 'Amortissement accéléré des équipements', save: `${fmt(investiss)} d'investissements amortissables`, gain: fmt(amortSaving), level: 'mid' });
+  }
+
+  // ── Déficit reportable ──
+  if (deficit > 0) {
+    const deficitSaving = Math.round(Math.min(deficit, resultat) * 0.25);
+    totalSavings += deficitSaving;
+    levers.push({ name: 'Report de déficit imputé', save: `${fmt(deficit)} de pertes antérieures déduites`, gain: fmt(deficitSaving), level: 'high' });
+  }
+
+  // ── Holding (régime mère-fille) ──
+  const hasHolding = chip('chips-is', 'Holding');
+  if (!hasHolding && dividendes > 0) {
+    const holdingSaving = Math.round(dividendes * 0.25 * 0.95);
+    totalSavings += holdingSaving;
+    levers.push({ name: 'Holding — régime mère-fille', save: `${fmt(dividendes)} de dividendes : IS à 5 % seulement (quote-part de frais)`, gain: fmt(holdingSaving), level: 'high' });
+  } else if (!hasHolding && resultat > 100000) {
+    levers.push({ name: 'Création d\'une holding', save: 'Optimisation de la remontée de trésorerie et transmission', gain: 'Stratégique', level: 'mid' });
+  }
+
+  // ── Arbitrage rémunération / dividendes ──
+  if (remDirigeant > 0 && dividendes === 0) {
+    levers.push({ name: 'Arbitrage rémunération / dividendes', save: 'Les dividendes en SAS sont soumis à la flat tax 30 % (vs charges sociales ~45 % sur salaire)', gain: 'À modéliser selon TMI', level: 'mid' });
+  }
+
+  // ── Épargne retraite dirigeant ──
+  const hasRetraite = chip('chips-retraite', 'PER') || chip('chips-retraite', 'Madelin') || chip('chips-retraite', 'Article');
+  if (!hasRetraite) {
+    const maxRetraite = Math.min(resultat * 0.10, 35194);
+    const retrSaving = Math.round(maxRetraite * 0.25);
+    totalSavings += retrSaving;
+    levers.push({ name: 'PER Entreprise / Madelin dirigeant', save: `Jusqu'à ${fmt(Math.round(maxRetraite))} déductibles du résultat`, gain: fmt(retrSaving), level: 'mid' });
+  }
+
+  // ── JEI ──
+  const hasJEI = chip('chips-labels', 'JEI');
+  if (!hasJEI && !cirNon) {
+    const jeiSaving = Math.round(remDirigeant * 0.15 || resultat * 0.03);
+    totalSavings += jeiSaving;
+    levers.push({ name: 'Statut JEI — exonération cotisations patronales', save: 'Pour entreprises innovantes de moins de 11 ans', gain: `~${fmt(jeiSaving)}`, level: 'low' });
+  }
+
+  // ── IS calculé après optimisations ──
+  const isApresOptim = Math.max(0, calcIS(Math.max(0, resultatNet - totalSavings + cirEst)) - cirEst);
+  const tauxEffectif = resultat > 0 ? ((isApresOptim / resultat) * 100).toFixed(1) + ' %' : '—';
+
+  document.getElementById('savings-amount').textContent = fmt(Math.round(totalSavings));
+  document.getElementById('is-current').textContent     = fmt(Math.round(isBase));
+  document.getElementById('is-after').textContent       = fmt(Math.max(0, Math.round(isApresOptim)));
+  document.getElementById('taux-is').textContent        = tauxEffectif;
+  document.getElementById('cir-est').textContent        = cirEst > 0 ? fmt(cirEst) : 'Non identifié';
+  document.getElementById('confidence-tag').textContent = 'Estimation';
+
+  const list = document.getElementById('lever-list');
+  list.innerHTML = levers.map(l => `
+    <div class="lever-item">
+      <div class="lever-dot ${l.level}"></div>
+      <div class="lever-text">
+        <div class="lever-name">${l.name}</div>
+        <div class="lever-save">${l.save}</div>
+      </div>
+      <div class="lever-gain">${l.gain}</div>
+    </div>
+  `).join('');
+  document.getElementById('levers-card').style.display = levers.length ? 'block' : 'none';
+}
+
+function requestExpert() {
+  alert('Fonctionnalité à venir — votre expert sera notifié.');
+}
+
+function resetForm() {
+  document.querySelectorAll('.field-input').forEach(i => i.value = '');
+  document.querySelectorAll('.field-select').forEach(s => s.selectedIndex = 0);
+  document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+  compute();
+}
+
+// Reveal
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.section-block').forEach((el, i) => {
+  el.style.transitionDelay = (i * 0.08) + 's';
+  io.observe(el);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gamma IA — Agent de conseil fiscal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      --accent: #6e9ab5;
+      --accent-light: #a2bfd4;
+      --accent-dark: #3d6f8a;
+      --bg: #050a12;
+      --surface: #0c1525;
+      --surface2: #111c2e;
+      --text: #edf2ff;
+      --muted: #6b7fa0;
+      --glass: rgba(255,255,255,0.03);
+      --border: rgba(110,154,181,0.12);
+      --user-bg: rgba(110,154,181,0.12);
+      --ai-bg: rgba(255,255,255,0.03);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    nav {
+      position: relative;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 3.5rem;
+      background: rgba(5,10,18,0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo-gold {
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .agent-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(110,154,181,0.25);
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      background: rgba(110,154,181,0.06);
+    }
+
+    .agent-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 6px #4ade80;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .back-link {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-light); }
+
+    .chat-container {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      overflow: hidden;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(110,154,181,0.2) transparent;
+    }
+
+    .messages::-webkit-scrollbar { width: 4px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: rgba(110,154,181,0.2); border-radius: 2px; }
+
+    .welcome {
+      text-align: center;
+      padding: 3rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .welcome-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: rgba(110,154,181,0.08);
+      border: 1px solid rgba(110,154,181,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .welcome h2 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .welcome p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      max-width: 460px;
+    }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .suggestion {
+      font-size: 0.78rem;
+      padding: 0.45rem 1rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.25s;
+      backdrop-filter: blur(12px);
+    }
+
+    .suggestion:hover {
+      border-color: rgba(110,154,181,0.4);
+      color: var(--accent-light);
+      background: rgba(110,154,181,0.06);
+    }
+
+    /* ── Mode cards ── */
+    .mode-cards {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 3rem 0 2rem;
+      animation: msgIn 0.5s ease both;
+    }
+
+    .mode-card {
+      position: relative;
+      overflow: hidden;
+      width: 290px;
+      padding: 2rem 1.75rem 0;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      cursor: pointer;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mode-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .mode-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(110,154,181,0.35);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(110,154,181,0.07);
+    }
+
+    .mode-card:hover::before { opacity: 1; }
+
+    .mode-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      background: rgba(110,154,181,0.08);
+      border: 1px solid rgba(110,154,181,0.15);
+      margin-bottom: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .mode-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+
+    .mode-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.65rem;
+      line-height: 1.25;
+    }
+
+    .mode-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      margin-bottom: 1.5rem;
+      transition: gap 0.3s;
+    }
+    .mode-card:hover .mode-arrow { gap: 0.6rem; }
+
+    .mode-ticker-wrap {
+      border-top: 1px solid var(--border);
+      margin: auto -1.75rem 0;
+      padding: 0.7rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+      background: rgba(0,0,0,0.15);
+    }
+
+    .mode-ticker-inner {
+      display: inline-block;
+      animation: marquee 38s linear infinite;
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      font-weight: 500;
+      padding-left: 1.75rem;
+    }
+
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .message {
+      display: flex;
+      gap: 0.85rem;
+      animation: msgIn 0.3s ease;
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user { flex-direction: row-reverse; }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+
+    .avatar.ai {
+      background: rgba(110,154,181,0.1);
+      border: 1px solid rgba(110,154,181,0.2);
+    }
+
+    .avatar.user {
+      background: rgba(110,154,181,0.15);
+      border: 1px solid rgba(110,154,181,0.25);
+    }
+
+    .bubble {
+      max-width: 78%;
+      padding: 0.9rem 1.2rem;
+      border-radius: 16px;
+      font-size: 0.88rem;
+      line-height: 1.75;
+      border: 1px solid var(--border);
+    }
+
+    .message.user .bubble {
+      background: var(--user-bg);
+      border-color: rgba(110,154,181,0.2);
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.ai .bubble {
+      background: var(--ai-bg);
+      backdrop-filter: blur(12px);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Markdown rendering */
+    .bubble h1, .bubble h2, .bubble h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-top: 1.1em;
+      margin-bottom: 0.4em;
+    }
+    .bubble h1 { font-size: 1.1rem; }
+    .bubble h2 { font-size: 1rem; color: var(--accent-light); }
+    .bubble h3 { font-size: 0.9rem; color: var(--muted); }
+    .bubble h1:first-child, .bubble h2:first-child, .bubble h3:first-child { margin-top: 0; }
+
+    .bubble p { margin-bottom: 0.6em; }
+    .bubble p:last-child { margin-bottom: 0; }
+
+    .bubble ul, .bubble ol {
+      padding-left: 1.4em;
+      margin-bottom: 0.6em;
+    }
+    .bubble li { margin-bottom: 0.25em; }
+
+    .bubble strong { color: var(--accent-light); font-weight: 600; }
+    .bubble em { color: var(--muted); font-style: italic; }
+
+    .bubble code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.82em;
+      background: rgba(110,154,181,0.1);
+      border: 1px solid rgba(110,154,181,0.15);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+      color: var(--accent-light);
+    }
+
+    .bubble pre {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      overflow-x: auto;
+      margin: 0.6em 0;
+    }
+    .bubble pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 0.83rem;
+      color: var(--text);
+    }
+
+    .bubble table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75em 0;
+      font-size: 0.83rem;
+    }
+    .bubble th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid rgba(110,154,181,0.25);
+      color: var(--accent-light);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .bubble td {
+      padding: 0.45rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    .bubble tr:last-child td { border-bottom: none; }
+    .bubble tr:hover td { background: rgba(110,154,181,0.04); }
+
+    .bubble blockquote {
+      border-left: 2px solid var(--accent);
+      padding-left: 0.9rem;
+      margin: 0.6em 0;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .bubble hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0.75em 0;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--accent);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.9s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .thinking-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .thinking-dots span {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin: 0 1px;
+      animation: dot 1.2s infinite;
+    }
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dot {
+      0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    .input-area {
+      flex-shrink: 0;
+      padding: 1rem 0 1.5rem;
+      position: relative;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      gap: 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+      transition: border-color 0.25s;
+    }
+
+    .input-wrap:focus-within {
+      border-color: rgba(110,154,181,0.4);
+      box-shadow: 0 0 0 3px rgba(110,154,181,0.06);
+    }
+
+    textarea {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      resize: none;
+      max-height: 180px;
+      min-height: 24px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(110,154,181,0.2) transparent;
+    }
+
+    textarea::placeholder { color: var(--muted); }
+
+    .send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .send-btn:hover { background: var(--accent-dark); transform: scale(1.05); }
+    .send-btn:active { transform: scale(0.97); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .send-btn svg { width: 16px; height: 16px; }
+
+    .input-hint {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+      opacity: 0.6;
+    }
+
+    .error-msg {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.83rem;
+      color: #fca5a5;
+    }
+
+    @media (max-width: 700px) {
+      nav { padding: 1rem 1.25rem; }
+      .agent-badge { display: none; }
+      .chat-container { padding: 0 1rem; }
+      .bubble { max-width: 90%; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<nav>
+  <a class="logo" href="index.html"><span class="logo-gold">Gamma</span> IA</a>
+  <div class="nav-right">
+    <div class="agent-badge"><span class="dot"></span> Agent fiscal IA</div>
+    <a class="back-link" href="index.html">← Retour</a>
+  </div>
+</nav>
+
+<div class="chat-container">
+  <div class="messages" id="messages">
+    <div class="welcome" id="welcome">
+      <div class="mode-cards">
+
+        <div class="mode-card" onclick="selectMode('global')">
+          <div class="mode-icon">🏢</div>
+          <div class="mode-label">Analyse complète</div>
+          <h2 class="mode-title">Optimisation globale de l'entreprise</h2>
+          <span class="mode-arrow">Commencer <span>→</span></span>
+          <div class="mode-ticker-wrap">
+            <span class="mode-ticker-inner">
+              Déposez la data room de votre entreprise et nous générons des plans de réorganisation fiscale de l'entreprise &nbsp;&nbsp;·&nbsp;&nbsp; Déposez la data room de votre entreprise et nous générons des plans de réorganisation fiscale de l'entreprise
+            </span>
+          </div>
+        </div>
+
+        <div class="mode-card" onclick="selectMode('conseil')">
+          <div class="mode-icon">💡</div>
+          <div class="mode-label">Conseil ciblé</div>
+          <h2 class="mode-title">Conseils personnalisés IA</h2>
+          <span class="mode-arrow">Commencer <span>→</span></span>
+          <div class="mode-ticker-wrap">
+            <span class="mode-ticker-inner">
+              Nous vous donnons des conseils personnalisés à des objectifs précis &nbsp;&nbsp;·&nbsp;&nbsp; Nous vous donnons des conseils personnalisés à des objectifs précis
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea
+        id="input"
+        placeholder="Posez votre question fiscale…"
+        rows="1"
+        onkeydown="handleKey(event)"
+        oninput="autoResize(this)"
+      ></textarea>
+      <button class="send-btn" id="sendBtn" onclick="send()" title="Envoyer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/>
+        </svg>
+      </button>
+    </div>
+    <p class="input-hint">Gamma IA IA · Sources : BOFiP · CGI · Légifrance · impots.gouv.fr · Entrée pour envoyer</p>
+  </div>
+</div>
+
+<script>
+/* ── Canvas particles ── */
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+resize();
+addEventListener('resize', resize);
+const mouse = { x: -999, y: -999 };
+addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+class P {
+  constructor() { this.init(true); }
+  init(rand = false) {
+    this.x = Math.random() * W;
+    this.y = rand ? Math.random() * H : H + 5;
+    this.vx = (Math.random() - 0.5) * 0.25;
+    this.vy = -(Math.random() * 0.35 + 0.08);
+    this.r = Math.random() * 1.5 + 0.4;
+    this.a = Math.random() * 0.35 + 0.08;
+    this.t = Math.random() * Math.PI * 2;
+  }
+  update() { this.x += this.vx; this.y += this.vy; this.t += 0.018; if (this.y < -10) this.init(); }
+  draw() {
+    ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(110,154,181,${this.a + Math.sin(this.t) * 0.06})`; ctx.fill();
+  }
+}
+const pts = Array.from({ length: 55 }, () => new P());
+function frame() {
+  ctx.clearRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W * .25, H * .35, 0, W * .25, H * .35, W * .65);
+  g.addColorStop(0, 'rgba(8,20,50,0.7)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  pts.forEach(p => {
+    p.update(); p.draw();
+    pts.forEach(q => {
+      const dx = p.x - q.x, dy = p.y - q.y, d = Math.hypot(dx, dy);
+      if (d < 130 && d > 0) {
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+        ctx.strokeStyle = `rgba(110,154,181,${(1 - d / 130) * 0.1})`;
+        ctx.lineWidth = 0.5; ctx.stroke();
+      }
+    });
+    const md = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+    if (md < 110) {
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
+      ctx.strokeStyle = `rgba(110,154,181,${(1 - md / 110) * 0.28})`;
+      ctx.lineWidth = 0.7; ctx.stroke();
+    }
+  });
+  requestAnimationFrame(frame);
+}
+frame();
+
+/* ── Chat logic ── */
+const messagesEl = document.getElementById('messages');
+const inputEl = document.getElementById('input');
+const sendBtn = document.getElementById('sendBtn');
+let history = [];
+let streaming = false;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 180) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    send();
+  }
+}
+
+function selectMode(mode) {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  const prompts = {
+    global: 'Je souhaite une optimisation fiscale globale de mon entreprise. Commençons par un audit de ma situation : quelles sont les informations et documents dont tu as besoin pour établir un plan de réorganisation fiscale complet ?',
+    conseil: 'Je souhaite des conseils fiscaux personnalisés. Quel est ton domaine d\'expertise et comment puis-je te décrire mon objectif précis pour que tu m\'aides au mieux ?'
+  };
+
+  inputEl.value = prompts[mode];
+  autoResize(inputEl);
+  send();
+}
+
+function suggest(btn) {
+  inputEl.value = btn.textContent;
+  autoResize(inputEl);
+  inputEl.focus();
+  send();
+}
+
+function scrollBottom() {
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function appendMessage(role, htmlContent) {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  const wrap = document.createElement('div');
+  wrap.className = `message ${role}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = `avatar ${role}`;
+  avatar.textContent = role === 'ai' ? '⚖️' : '👤';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = htmlContent;
+
+  wrap.appendChild(avatar);
+  wrap.appendChild(bubble);
+  messagesEl.appendChild(wrap);
+  scrollBottom();
+  return bubble;
+}
+
+function appendThinking() {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  const wrap = document.createElement('div');
+  wrap.className = 'message ai';
+  wrap.id = 'thinking-row';
+
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar ai';
+  avatar.textContent = '⚖️';
+
+  const ind = document.createElement('div');
+  ind.className = 'thinking-indicator';
+  ind.innerHTML = 'Analyse en cours <span class="thinking-dots"><span></span><span></span><span></span></span>';
+
+  wrap.appendChild(avatar);
+  wrap.appendChild(ind);
+  messagesEl.appendChild(wrap);
+  scrollBottom();
+  return wrap;
+}
+
+/* Minimal Markdown → HTML */
+function md(text) {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    /* code blocks */
+    .replace(/```[\w]*\n?([\s\S]*?)```/g, (_, c) => `<pre><code>${c.trim()}</code></pre>`)
+    /* inline code */
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    /* headers */
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    /* bold / italic */
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    /* hr */
+    .replace(/^---$/gm, '<hr>')
+    /* blockquote */
+    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    /* tables (simple) */
+    .replace(/(\|.+\|\n\|[-| :]+\|\n(?:\|.+\|\n?)+)/g, tableToHtml)
+    /* lists */
+    .replace(/((?:^[-*] .+\n?)+)/gm, (m) => '<ul>' + m.replace(/^[-*] (.+)$/gm, '<li>$1</li>') + '</ul>')
+    .replace(/((?:^\d+\. .+\n?)+)/gm, (m) => '<ol>' + m.replace(/^\d+\. (.+)$/gm, '<li>$1</li>') + '</ol>')
+    /* paragraphs */
+    .replace(/\n\n+/g, '\n\n')
+    .split('\n\n').map(p => {
+      p = p.trim();
+      if (!p) return '';
+      if (/^<(h[1-3]|ul|ol|pre|blockquote|hr|table)/.test(p)) return p;
+      return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+    }).join('\n');
+}
+
+function tableToHtml(block) {
+  const lines = block.trim().split('\n').filter(l => !l.match(/^[\|: -]+$/));
+  if (lines.length < 1) return block;
+  const rows = lines.map(l => l.replace(/^\||\|$/g, '').split('|').map(c => c.trim()));
+  const head = rows[0];
+  const body = rows.slice(1);
+  let html = '<table><thead><tr>' + head.map(h => `<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+  body.forEach(r => { html += '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>'; });
+  return html + '</tbody></table>';
+}
+
+async function send() {
+  if (streaming) return;
+  const text = inputEl.value.trim();
+  if (!text) return;
+
+  inputEl.value = '';
+  inputEl.style.height = 'auto';
+  sendBtn.disabled = true;
+  streaming = true;
+
+  appendMessage('user', `<p>${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p>`);
+  history.push({ role: 'user', content: text });
+
+  const thinkingRow = appendThinking();
+
+  let rawText = '';
+  let aiBubble = null;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: history }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'Erreur serveur' }));
+      throw new Error(err.error || 'Erreur serveur');
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = JSON.parse(line.slice(6));
+
+        if (data.type === 'text') {
+          if (!aiBubble) {
+            thinkingRow.remove();
+            aiBubble = appendMessage('ai', '');
+          }
+          rawText += data.text;
+          aiBubble.innerHTML = md(rawText) + '<span class="cursor"></span>';
+          scrollBottom();
+        } else if (data.type === 'done') {
+          if (aiBubble) {
+            aiBubble.innerHTML = md(rawText);
+          }
+          history.push({ role: 'assistant', content: rawText });
+        } else if (data.type === 'error') {
+          const msg = data.message || '';
+          if (msg.includes('overloaded')) throw new Error('__overloaded__');
+          throw new Error(msg);
+        }
+      }
+    }
+  } catch (err) {
+    thinkingRow.remove();
+    const msg = err.message || '';
+    const friendly = msg.includes('__overloaded__')
+      ? '⏳ Les serveurs Anthropic sont surchargés en ce moment. Réessaie dans quelques secondes.'
+      : `⚠️ ${msg || 'Vérifiez que le serveur est démarré (http://localhost:3000).'}`;
+    appendMessage('ai', `<div class="error-msg">${friendly}</div>`);
+  }
+
+  streaming = false;
+  sendBtn.disabled = false;
+  inputEl.focus();
+}
+</script>
+</body>
+</html>

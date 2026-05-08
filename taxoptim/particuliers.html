@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gamma IA — Analyse Particuliers</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      --accent: #6e9ab5;
+      --accent-light: #a2bfd4;
+      --bg: #050a12;
+      --text: #edf2ff;
+      --muted: #6b7fa0;
+      --border: rgba(110,154,181,0.12);
+      --glass: rgba(255,255,255,0.03);
+      --accent-bg: rgba(110,154,181,0.06);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 3.5rem;
+      background: rgba(5,10,18,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo-gold {
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.3s;
+    }
+
+    .nav-back:hover { color: var(--accent-light); }
+
+    .nav-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--accent-bg);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 8rem 3.5rem 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      opacity: 0;
+      animation: up 0.8s ease 0.1s forwards;
+    }
+
+    .breadcrumb {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4.5vw, 3.5rem);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1.08;
+      margin-bottom: 1rem;
+    }
+
+    .page-title em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-sub {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 520px;
+    }
+
+    /* MAIN LAYOUT */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 3.5rem 5rem;
+    }
+
+    /* SECTIONS */
+    .section-block {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .section-block.visible { opacity: 1; transform: translateY(0); }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.25rem 1.75rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.3s;
+    }
+
+    .section-head:hover { background: var(--accent-bg); }
+
+    .section-head-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      background: rgba(110,154,181,0.1);
+      border: 1px solid rgba(110,154,181,0.15);
+      flex-shrink: 0;
+    }
+
+    .section-head-text { flex: 1; }
+
+    .section-head-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .section-head-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    .section-chevron {
+      font-size: 0.75rem;
+      color: var(--muted);
+      transition: transform 0.3s;
+    }
+
+    .section-block.open .section-chevron { transform: rotate(180deg); }
+
+    .section-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+    }
+
+    .section-inner { padding: 1.5rem 1.75rem; }
+
+    /* FORM ELEMENTS */
+    .field-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.45rem;
+    }
+
+    .field-input, .field-select {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+      appearance: none;
+    }
+
+    .field-input:focus, .field-select:focus {
+      border-color: rgba(110,154,181,0.45);
+      background: rgba(110,154,181,0.04);
+    }
+
+    .field-select option { background: #0d1526; color: var(--text); }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .field-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+      line-height: 1.5;
+    }
+
+    /* TOGGLE CHIPS */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.45rem;
+    }
+
+    .chip {
+      padding: 0.35rem 0.85rem;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.25s;
+      user-select: none;
+    }
+
+    .chip:hover { border-color: rgba(110,154,181,0.3); color: var(--accent-light); }
+    .chip.active { border-color: var(--accent); background: rgba(110,154,181,0.1); color: var(--accent-light); }
+
+    /* SIDEBAR */
+    .sidebar { position: sticky; top: 6rem; align-self: start; }
+
+    .result-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .result-head {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .result-head-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .result-head-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      background: rgba(110,154,181,0.1);
+      border: 1px solid rgba(110,154,181,0.2);
+    }
+
+    .result-body { padding: 1.5rem; }
+
+    .result-amount {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .result-sublabel {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .result-divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0;
+    }
+
+    .result-row-label { font-size: 0.8rem; color: var(--muted); }
+
+    .result-row-value {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .result-row-value.positive { color: #5dca8a; }
+
+    /* LEVERS */
+    .lever-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .lever-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.02);
+      transition: all 0.3s;
+      cursor: default;
+    }
+
+    .lever-item:hover { border-color: var(--border); background: var(--accent-bg); }
+
+    .lever-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .lever-dot.high { background: #5dca8a; box-shadow: 0 0 6px rgba(93,202,138,0.5); }
+    .lever-dot.mid  { background: var(--accent-bg); box-shadow: 0 0 6px rgba(110,154,181,0.4); }
+    .lever-dot.low  { background: #6b7fa0; }
+
+    .lever-text { flex: 1; }
+    .lever-name { font-size: 0.82rem; font-weight: 500; }
+    .lever-save { font-size: 0.75rem; color: var(--muted); }
+    .lever-gain { font-size: 0.78rem; font-weight: 600; color: #5dca8a; white-space: nowrap; }
+
+    /* CTA BUTTON */
+    .btn-analyze {
+      width: 100%;
+      padding: 0.9rem;
+      border-radius: 8px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      color: #050a12;
+      letter-spacing: 0.03em;
+      transition: opacity 0.3s, transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 0 30px rgba(110,154,181,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-analyze:hover {
+      opacity: 0.92;
+      transform: translateY(-2px);
+      box-shadow: 0 0 50px rgba(110,154,181,0.35);
+    }
+
+    .btn-analyze::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+
+    .btn-analyze:hover::after { transform: translateX(100%); }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.83rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      transition: all 0.3s;
+      margin-top: 0.6rem;
+    }
+
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    @keyframes up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* INFO BOX */
+    .info-box-p {
+      padding: 0.9rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(110,154,181,0.2);
+      background: rgba(110,154,181,0.05);
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: #c8b87a;
+      margin-bottom: 1.25rem;
+    }
+
+    /* COMPARE GRID */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .compare-card {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .compare-card.winner {
+      border-color: #5dca8a;
+      box-shadow: 0 0 24px rgba(93,202,138,0.08);
+    }
+
+    .compare-card.loser { opacity: 0.6; }
+
+    .compare-card-head {
+      padding: 1.1rem 1.25rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .compare-tag {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .compare-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0.2rem 0 0.15rem;
+    }
+
+    .compare-subtitle { font-size: 0.73rem; color: var(--muted); }
+
+    .compare-rows { padding: 0.85rem 1.25rem; }
+
+    .compare-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.35rem 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .compare-row strong { color: var(--text); font-weight: 600; font-size: 0.85rem; }
+
+    .compare-row.total {
+      border-bottom: none;
+      margin-top: 0.3rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .compare-row.total strong {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .compare-card.winner .compare-row.total strong {
+      background: linear-gradient(135deg, #7de8a8, #5dca8a);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .compare-pros {
+      padding: 0.75rem 1.25rem 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .compare-pro { font-size: 0.73rem; color: #5dca8a; }
+    .compare-con { font-size: 0.73rem; color: var(--muted); }
+
+    /* VERDICT */
+    .verdict {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      transition: all 0.4s;
+    }
+
+    .verdict.win-a { border-color: rgba(93,202,138,0.3); background: rgba(93,202,138,0.05); }
+    .verdict.win-b { border-color: rgba(93,202,138,0.3); background: rgba(93,202,138,0.05); }
+    .verdict.tie   { border-color: var(--border); }
+
+    .verdict-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+    .verdict-text { flex: 1; }
+
+    .verdict-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+
+    .verdict-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+    .verdict-gain {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #5dca8a;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    @media (max-width: 860px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .page-header { padding: 7rem 1.5rem 2rem; }
+      .layout { grid-template-columns: 1fr; padding: 0 1.5rem 4rem; }
+      .sidebar { position: static; }
+      .field-row { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .verdict { flex-wrap: wrap; }
+      .verdict-gain { width: 100%; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html" onclick="navigate(event,'index.html')"><span class="logo-gold">Gamma</span> IA</a>
+  <a class="nav-back" href="index.html" onclick="navigate(event,'index.html')">← Retour</a>
+  <div class="nav-badge">🏠 Particuliers</div>
+</nav>
+
+<header class="page-header">
+  <p class="breadcrumb">Gamma IA · Particuliers</p>
+  <h1 class="page-title">Analyse fiscale<br><em>personnelle</em></h1>
+  <p class="page-sub">Renseignez votre situation pour identifier les leviers d'optimisation adaptés à votre profil.</p>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: FORM -->
+  <div class="form-col">
+
+    <!-- Situation personnelle -->
+    <div class="section-block open" id="s1">
+      <div class="section-head" onclick="toggle('s1')">
+        <div class="section-head-icon">👤</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Situation personnelle</div>
+          <div class="section-head-desc">Statut, foyer fiscal, revenus</div>
+        </div>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Situation familiale</label>
+              <select class="field-select" onchange="compute()">
+                <option>Célibataire</option>
+                <option>Marié(e) / Pacsé(e)</option>
+                <option>Divorcé(e)</option>
+                <option>Veuf / Veuve</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Nombre d'enfants à charge</label>
+              <select class="field-select" onchange="compute()">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4 ou plus</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Revenu net annuel imposable (€)</label>
+            <input id="rev-imposable" class="field-input" type="number" placeholder="ex : 55 000" oninput="compute()" />
+            <p class="field-hint">Revenu après abattement de 10 % (cases 1AJ–1DJ de votre déclaration)</p>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Autres revenus annuels (€)</label>
+            <input id="autres-revenus" class="field-input" type="number" placeholder="Dividendes, loyers, plus-values…" oninput="compute()" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Immobilier -->
+    <div class="section-block" id="s2">
+      <div class="section-head" onclick="toggle('s2')">
+        <div class="section-head-icon">🏠</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Immobilier</div>
+          <div class="section-head-desc">Résidence principale, investissements locatifs</div>
+        </div>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="field-group">
+            <label class="field-label">Êtes-vous propriétaire de votre résidence principale ?</label>
+            <div class="chips" id="chips-proprio">
+              <div class="chip active" onclick="setChip('chips-proprio',this);compute()">Oui</div>
+              <div class="chip" onclick="setChip('chips-proprio',this);compute()">Non, locataire</div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Investissements locatifs</label>
+            <div class="chips" id="chips-loc">
+              <div class="chip" onclick="setChip('chips-loc',this);compute()">Aucun</div>
+              <div class="chip active" onclick="setChip('chips-loc',this);compute()">Location nue</div>
+              <div class="chip" onclick="setChip('chips-loc',this);compute()">LMNP / LMP</div>
+              <div class="chip" onclick="setChip('chips-loc',this);compute()">SCI</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Revenus locatifs bruts annuels (€)</label>
+              <input id="rev-locatifs" class="field-input" type="number" placeholder="ex : 12 000" oninput="compute()" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Charges & intérêts d'emprunt (€)</label>
+              <input id="charges-immo" class="field-input" type="number" placeholder="ex : 4 500" oninput="compute()" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Épargne & Placements -->
+    <div class="section-block" id="s3">
+      <div class="section-head" onclick="toggle('s3')">
+        <div class="section-head-icon">📈</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Épargne & Placements</div>
+          <div class="section-head-desc">PEA, assurance-vie, PER, retraite</div>
+        </div>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="field-group">
+            <label class="field-label">Véhicules d'épargne déjà utilisés</label>
+            <div class="chips" id="chips-epargne" style="gap:0.5rem 0.5rem">
+              <div class="chip" onclick="toggleMulti(this);compute()">PEA</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Assurance-vie</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">PER individuel</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Livret A</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">LDDS</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Comptes-titres</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Versements PER annuels (€)</label>
+              <input id="per-versements" class="field-input" type="number" placeholder="ex : 5 000" oninput="compute()" />
+              <p class="field-hint">Déductibles du revenu imposable</p>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Plus-values mobilières (€)</label>
+              <input id="plus-values" class="field-input" type="number" placeholder="ex : 8 000" oninput="compute()" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Défiscalisation -->
+    <div class="section-block" id="s4">
+      <div class="section-head" onclick="toggle('s4')">
+        <div class="section-head-icon">💡</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Défiscalisation & Dons</div>
+          <div class="section-head-desc">Dispositifs déjà activés ou envisagés</div>
+        </div>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="field-group">
+            <label class="field-label">Dispositifs actifs</label>
+            <div class="chips" id="chips-defisc">
+              <div class="chip" onclick="toggleMulti(this);compute()">Pinel</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Malraux</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Déficit foncier</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">FCPI / FIP</div>
+              <div class="chip" onclick="toggleMulti(this);compute()">Girardin</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Dons aux associations (€/an)</label>
+              <input id="dons" class="field-input" type="number" placeholder="ex : 500" oninput="compute()" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Emploi à domicile (€/an)</label>
+              <input id="dom-emploi" class="field-input" type="number" placeholder="ex : 3 000" oninput="compute()" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rattachement enfant majeur -->
+    <div class="section-block" id="s5">
+      <div class="section-head" onclick="toggle('s5')">
+        <div class="section-head-icon">👨‍👧</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Enfant majeur — Rattachement ou déclaration séparée ?</div>
+          <div class="section-head-desc">Simulez l'option la plus avantageuse pour votre foyer</div>
+        </div>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+
+          <div class="info-box-p">
+            📋 Un enfant majeur entre 18 et 25 ans (étudiant ou non) peut choisir de rester rattaché à votre foyer fiscal ou de déclarer ses revenus séparément. Chaque option a des conséquences sur votre IR et sur le sien.
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Âge de l'enfant</label>
+              <input id="enfant-age" class="field-input" type="number" placeholder="ex : 21" min="18" max="25" oninput="computeEnfant()" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Situation de l'enfant</label>
+              <select id="enfant-statut" class="field-select" onchange="computeEnfant()">
+                <option value="etudiant">Étudiant</option>
+                <option value="travaille">En activité (CDI / CDD)</option>
+                <option value="alternance">Alternance / apprentissage</option>
+                <option value="chomage">Au chômage</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Rang de cet enfant dans votre foyer</label>
+            <div class="chips" id="chips-rang">
+              <div class="chip active" onclick="setChip('chips-rang',this);computeEnfant()">1er enfant</div>
+              <div class="chip" onclick="setChip('chips-rang',this);computeEnfant()">2ème enfant</div>
+              <div class="chip" onclick="setChip('chips-rang',this);computeEnfant()">3ème enfant</div>
+              <div class="chip" onclick="setChip('chips-rang',this);computeEnfant()">4ème ou +</div>
+            </div>
+            <p class="field-hint">1er et 2ème enfant → +0,5 part · 3ème et au-delà → +1 part · 1er enfant parent isolé → +1 part</p>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Revenus annuels nets de l'enfant (€)</label>
+              <input id="enfant-revenus" class="field-input" type="number" placeholder="ex : 8 000" oninput="computeEnfant()" />
+              <p class="field-hint">Salaires, jobs étudiants, allocations imposables… (net imposable)</p>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Pension alimentaire versée ou envisagée (€/an)</label>
+              <input id="enfant-pension" class="field-input" type="number" placeholder="ex : 6 000" oninput="computeEnfant()" />
+              <p class="field-hint">Montant déductible plafonné à 6 674 € (2024) si déclaration séparée</p>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Situation du parent</label>
+            <div class="chips" id="chips-parent-statut">
+              <div class="chip active" onclick="setChip('chips-parent-statut',this);computeEnfant()">Couple (marié / pacsé)</div>
+              <div class="chip" onclick="setChip('chips-parent-statut',this);computeEnfant()">Parent isolé (célibataire / divorcé / veuf)</div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">L'enfant est-il actuellement rattaché à votre foyer ?</label>
+            <div class="chips" id="chips-rattach">
+              <div class="chip active" onclick="setChip('chips-rattach',this);computeEnfant()">Oui, rattaché</div>
+              <div class="chip" onclick="setChip('chips-rattach',this);computeEnfant()">Non, déclaration séparée</div>
+            </div>
+          </div>
+
+          <!-- RÉSULTAT COMPARATIF -->
+          <div id="enfant-result" style="display:none; margin-top:1.5rem">
+
+            <div class="compare-grid">
+
+              <!-- Scénario A -->
+              <div class="compare-card" id="card-rattach">
+                <div class="compare-card-head">
+                  <span class="compare-tag">Scénario A</span>
+                  <h4 class="compare-title">Rattachement</h4>
+                  <p class="compare-subtitle">L'enfant reste dans votre foyer fiscal</p>
+                </div>
+                <div class="compare-rows">
+                  <div class="compare-row">
+                    <span>Parts fiscales parent</span>
+                    <strong id="ra-parts">—</strong>
+                  </div>
+                  <div class="compare-row">
+                    <span>IR du parent</span>
+                    <strong id="ra-ir-parent">—</strong>
+                  </div>
+                  <div class="compare-row">
+                    <span>IR de l'enfant</span>
+                    <strong id="ra-ir-enfant">—</strong>
+                  </div>
+                  <div class="compare-row total">
+                    <span>Total impôt foyer</span>
+                    <strong id="ra-total">—</strong>
+                  </div>
+                </div>
+                <div class="compare-pros">
+                  <div class="compare-pro">✓ Demi-part supplémentaire</div>
+                  <div class="compare-pro">✓ Aucune démarche pour l'enfant</div>
+                  <div class="compare-con">✗ Pension alimentaire non déductible</div>
+                  <div class="compare-con">✗ Ressources de l'enfant non prises en compte</div>
+                </div>
+              </div>
+
+              <!-- Scénario B -->
+              <div class="compare-card" id="card-separe">
+                <div class="compare-card-head">
+                  <span class="compare-tag">Scénario B</span>
+                  <h4 class="compare-title">Déclaration séparée</h4>
+                  <p class="compare-subtitle">L'enfant déclare ses propres revenus</p>
+                </div>
+                <div class="compare-rows">
+                  <div class="compare-row">
+                    <span>Parts fiscales parent</span>
+                    <strong id="sb-parts">—</strong>
+                  </div>
+                  <div class="compare-row">
+                    <span>IR du parent</span>
+                    <strong id="sb-ir-parent">—</strong>
+                  </div>
+                  <div class="compare-row">
+                    <span>IR de l'enfant</span>
+                    <strong id="sb-ir-enfant">—</strong>
+                  </div>
+                  <div class="compare-row total">
+                    <span>Total impôt foyer</span>
+                    <strong id="sb-total">—</strong>
+                  </div>
+                </div>
+                <div class="compare-pros">
+                  <div class="compare-pro">✓ Pension alimentaire déductible (plafond 6 674 €)</div>
+                  <div class="compare-pro">✓ L'enfant peut bénéficier de la prime d'activité</div>
+                  <div class="compare-con">✗ Perte de la demi-part</div>
+                  <div class="compare-con">✗ L'enfant paie son propre IR</div>
+                </div>
+              </div>
+
+            </div><!-- /compare-grid -->
+
+            <!-- VERDICT -->
+            <div class="verdict" id="verdict-box">
+              <div class="verdict-icon" id="verdict-icon">⚖️</div>
+              <div class="verdict-text">
+                <div class="verdict-title" id="verdict-title">Complétez vos revenus pour voir le résultat</div>
+                <div class="verdict-desc" id="verdict-desc"></div>
+              </div>
+              <div class="verdict-gain" id="verdict-gain"></div>
+            </div>
+
+          </div><!-- /enfant-result -->
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /form-col -->
+
+  <!-- RIGHT: SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Résultat estimé -->
+    <div class="result-card">
+      <div class="result-head">
+        <span class="result-head-title">Économies estimées</span>
+        <span class="result-head-tag" id="confidence-tag">À compléter</span>
+      </div>
+      <div class="result-body">
+        <div class="result-amount" id="savings-amount">—</div>
+        <div class="result-sublabel">d'économies potentielles / an</div>
+
+        <div class="result-divider"></div>
+
+        <div class="result-row">
+          <span class="result-row-label">Impôt actuel estimé</span>
+          <span class="result-row-value" id="tax-current">—</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label">Impôt après optimisation</span>
+          <span class="result-row-value positive" id="tax-after">—</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label">Taux marginal</span>
+          <span class="result-row-value" id="tmi">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leviers identifiés -->
+    <div class="result-card" id="levers-card" style="display:none">
+      <div class="result-head">
+        <span class="result-head-title">Leviers prioritaires</span>
+      </div>
+      <div class="result-body">
+        <div class="lever-list" id="lever-list"></div>
+      </div>
+    </div>
+
+    <button class="btn-analyze" onclick="requestExpert()">Obtenir une analyse complète →</button>
+    <button class="btn-secondary" onclick="resetForm()">Réinitialiser</button>
+
+    <p style="font-size:0.68rem;color:var(--muted);text-align:center;margin-top:1rem;line-height:1.5">
+      Estimations indicatives. Consultez un expert pour une analyse certifiée.
+    </p>
+
+  </aside>
+</div>
+
+<script>
+function navigate(e, url) {
+  e.preventDefault();
+  window.location.href = url;
+}
+
+// Accordion
+function toggle(id) {
+  const el = document.getElementById(id);
+  const body = el.querySelector('.section-body');
+  const isOpen = el.classList.contains('open');
+  if (isOpen) {
+    body.style.maxHeight = '0';
+    el.classList.remove('open');
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    el.classList.add('open');
+  }
+}
+
+function expandSection(id) {
+  const el = document.getElementById(id);
+  const body = el.querySelector('.section-body');
+  if (el.classList.contains('open')) {
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+// Chips
+function setChip(groupId, el) {
+  document.querySelectorAll('#' + groupId + ' .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleMulti(el) {
+  el.classList.toggle('active');
+}
+
+function val(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+function fmt(n) { return n.toLocaleString('fr-FR') + ' €'; }
+function chip(groupId, text) {
+  return Array.from(document.querySelectorAll('#' + groupId + ' .chip.active')).some(c => c.textContent.trim().includes(text));
+}
+
+// Barème IR 2024 par tranche sur le quotient familial
+function calcIR(revenu, parts) {
+  const q = revenu / parts;
+  let ir = 0;
+  if (q > 11497)  ir += Math.min(q, 29315)  - 11497;
+  if (q > 29315)  ir += (Math.min(q, 83823)  - 29315) * (0.30 / 0.11);
+  if (q > 83823)  ir += (Math.min(q, 180294) - 83823)  * (0.41 / 0.11);
+  if (q > 180294) ir += (q - 180294) * (0.45 / 0.11);
+
+  // recalcul direct par tranche
+  let t = 0;
+  const tranches = [[11497,0],[29315,0.11],[83823,0.30],[180294,0.41],[Infinity,0.45]];
+  let prev = 0;
+  for (const [seuil, taux] of tranches) {
+    if (q <= prev) break;
+    t += (Math.min(q, seuil) - prev) * taux;
+    prev = seuil;
+  }
+  return Math.max(0, t * parts);
+}
+
+function getTaux(revenu, parts) {
+  const q = revenu / parts;
+  if (q <= 11497)  return { label: '0 %',  rate: 0 };
+  if (q <= 29315)  return { label: '11 %', rate: 0.11 };
+  if (q <= 83823)  return { label: '30 %', rate: 0.30 };
+  if (q <= 180294) return { label: '41 %', rate: 0.41 };
+  return { label: '45 %', rate: 0.45 };
+}
+
+function compute() {
+  const revenu    = val('rev-imposable');
+  const autresRev = val('autres-revenus');
+  const revLoc    = val('rev-locatifs');
+  const chargesLoc= val('charges-immo');
+  const perVers   = val('per-versements');
+  const plusVal   = val('plus-values');
+  const donsVal   = val('dons');
+  const domVal    = val('dom-emploi');
+
+  // Réinitialiser si aucun revenu
+  if (revenu <= 0) {
+    ['savings-amount','tax-current','tax-after','tmi'].forEach(id => document.getElementById(id).textContent = '—');
+    document.getElementById('confidence-tag').textContent = 'À compléter';
+    document.getElementById('levers-card').style.display = 'none';
+    return;
+  }
+
+  // Parts fiscales
+  const selects = document.querySelectorAll('#s1 .field-select');
+  const married = selects[0]?.value.includes('Marié') || selects[0]?.value.includes('Pacsé');
+  const children = parseInt(selects[1]?.value) || 0;
+  const parentIsole = !married && children > 0;
+  let parts = married ? 2 : 1;
+  if (children > 0) {
+    parts += parentIsole ? 1 : 0.5;   // 1er enfant : +1 si parent isolé, +0,5 si couple
+    if (children >= 2) parts += 0.5;  // 2ème enfant : +0,5
+    if (children >= 3) parts += (children - 2); // 3ème et au-delà : +1 par enfant
+  }
+
+  // Revenus fonciers nets imposables
+  const foncierNet = Math.max(0, revLoc - chargesLoc);
+  // PER : déduit du revenu imposable
+  const revApresPerBase = Math.max(0, revenu - perVers);
+  const revTotal = revApresPerBase + foncierNet + autresRev;
+
+  const { label: tmiLabel, rate: tmiRate } = getTaux(revTotal, parts);
+  const irBase   = calcIR(revenu + foncierNet + autresRev, parts);
+  const levers   = [];
+  let totalSavings = 0;
+
+  // ── PER individuel ──
+  if (perVers > 0) {
+    const perSaving = Math.round(perVers * tmiRate);
+    totalSavings += perSaving;
+    levers.push({ name: 'PER — déduction versements', save: `${fmt(perVers)} déduits du revenu imposable`, gain: fmt(perSaving), level: 'high' });
+  } else {
+    const maxPer = Math.min(Math.round(revenu * 0.10), 35194);
+    if (maxPer > 500 && tmiRate > 0) {
+      const potentiel = Math.round(maxPer * tmiRate);
+      levers.push({ name: 'PER — potentiel non utilisé', save: `Jusqu'à ${fmt(maxPer)} déductibles (plafond estimé)`, gain: `~${fmt(potentiel)} économisés`, level: 'high' });
+      totalSavings += potentiel;
+    }
+  }
+
+  // ── Revenus locatifs : passage LMNP ──
+  const hasLMNP = chip('chips-loc', 'LMNP');
+  const hasNue  = chip('chips-loc', 'nue');
+  if (revLoc > 0 && !hasLMNP) {
+    const econLMNP = Math.round(foncierNet * tmiRate * 0.7); // amortissement couvre ~70% du résultat
+    levers.push({ name: 'Passage en LMNP', save: `Amortissement du bien : revenus quasi non imposés`, gain: econLMNP > 0 ? `~${fmt(econLMNP)}` : 'Significatif', level: 'high' });
+    totalSavings += econLMNP;
+  } else if (revLoc > 0 && hasLMNP) {
+    levers.push({ name: 'LMNP déjà actif ✓', save: 'Amortissement en cours — vérifier le régime réel', gain: 'Optimisé', level: 'low' });
+  }
+
+  // ── Dons associations ──
+  if (donsVal > 0) {
+    const donSaving = Math.round(Math.min(donsVal, revenu * 0.20) * 0.66);
+    totalSavings += donSaving;
+    levers.push({ name: 'Réduction dons (66 %)', save: `${fmt(donsVal)} de dons déclarés`, gain: fmt(donSaving), level: 'mid' });
+  } else {
+    levers.push({ name: 'Dons associations — non déclarés', save: 'Réduction d\'impôt de 66 % des sommes versées', gain: 'ex: 500 € → 330 € économisés', level: 'low' });
+    totalSavings += 330;
+  }
+
+  // ── Emploi à domicile ──
+  if (domVal > 0) {
+    const domSaving = Math.round(Math.min(domVal, 12000) * 0.50);
+    totalSavings += domSaving;
+    levers.push({ name: 'Crédit impôt emploi à domicile (50 %)', save: `${fmt(domVal)} de dépenses déclarées`, gain: fmt(domSaving), level: 'mid' });
+  } else {
+    levers.push({ name: 'Emploi à domicile — crédit 50 %', save: 'Garde enfants, ménage, jardinage… éligibles', gain: 'ex: 3 000 € → 1 500 € crédités', level: 'low' });
+    totalSavings += 750;
+  }
+
+  // ── PEA : exonération plus-values ──
+  const hasPEA = chip('chips-epargne', 'PEA');
+  if (!hasPEA && plusVal > 0) {
+    const flat = Math.round(plusVal * 0.30);
+    const pea  = Math.round(plusVal * 0.172); // PS seuls après 5 ans
+    levers.push({ name: 'PEA — exonération plus-values après 5 ans', save: `${fmt(plusVal)} de PV imposés à 30 % flat tax actuellement`, gain: `Économie potentielle : ${fmt(flat - pea)}`, level: 'high' });
+    totalSavings += flat - pea;
+  } else if (!hasPEA) {
+    levers.push({ name: 'Ouvrir un PEA', save: 'Plus-values exonérées d\'IR après 5 ans (PS dus uniquement)', gain: 'Stratégique long terme', level: 'mid' });
+  }
+
+  // ── Assurance-vie ──
+  const hasAV = chip('chips-epargne', 'Assurance-vie');
+  if (!hasAV) {
+    levers.push({ name: 'Assurance-vie', save: 'Abattement de 4 600 € / 9 200 € après 8 ans, transmission optimisée', gain: 'Fiscalité allégée', level: 'low' });
+  }
+
+  // Calcul final
+  const irApres = Math.max(0, irBase - totalSavings);
+
+  document.getElementById('savings-amount').textContent = fmt(Math.round(totalSavings));
+  document.getElementById('tax-current').textContent    = fmt(Math.round(irBase));
+  document.getElementById('tax-after').textContent      = fmt(Math.max(0, Math.round(irApres)));
+  document.getElementById('tmi').textContent            = tmiLabel;
+  document.getElementById('confidence-tag').textContent = 'Estimation';
+
+  const list = document.getElementById('lever-list');
+  list.innerHTML = levers.map(l => `
+    <div class="lever-item">
+      <div class="lever-dot ${l.level}"></div>
+      <div class="lever-text">
+        <div class="lever-name">${l.name}</div>
+        <div class="lever-save">${l.save}</div>
+      </div>
+      <div class="lever-gain">${l.gain}</div>
+    </div>
+  `).join('');
+  document.getElementById('levers-card').style.display = levers.length ? 'block' : 'none';
+}
+
+// ── COMPARATEUR RATTACHEMENT ENFANT MAJEUR ──
+function computeEnfant() {
+  const age        = parseInt(document.getElementById('enfant-age')?.value) || 0;
+  const revenus    = val('enfant-revenus');
+  const pension    = val('enfant-pension');
+  const statut     = document.getElementById('enfant-statut')?.value || 'etudiant';
+
+  // Revenus du parent déjà saisis dans la section principale
+  const revParent  = val('rev-imposable');
+  const autresRev  = val('autres-revenus');
+
+  // Situation du parent lue depuis le chip dédié (indépendant de s1)
+  const parentStatutChip = document.querySelector('#chips-parent-statut .chip.active');
+  const married    = parentStatutChip ? parentStatutChip.textContent.includes('Couple') : true;
+  const parentIsole = !married;
+
+  // Nombre d'enfants total déclaré dans s1 (pour calculer les parts des autres enfants)
+  const selects    = document.querySelectorAll('#s1 .field-select');
+  const nbEnfants  = parseInt(selects[1]?.value) || 0;
+
+  // Rang de l'enfant → quotient qu'il apporte
+  const rangChip = document.querySelector('#chips-rang .chip.active');
+  const rangText = rangChip ? rangChip.textContent.trim() : '1er enfant';
+
+  let quotientEnfant;
+  if (rangText === '1er enfant' && parentIsole) {
+    quotientEnfant = 1;    // parent isolé : 1re demi-part majorée = 1 part entière
+  } else if (rangText === '3ème enfant' || rangText === '4ème ou +') {
+    quotientEnfant = 1;    // à partir du 3ème : +1 part
+  } else {
+    quotientEnfant = 0.5;  // 1er ou 2ème enfant (couple) : +0,5 part
+  }
+
+  // Parts sans cet enfant (les autres enfants déjà dans le foyer)
+  let partsBase = married ? 2 : 1;
+  const autresEnfants = Math.max(0, nbEnfants - 1);
+  for (let i = 1; i <= autresEnfants; i++) {
+    if (i === 1 && parentIsole) partsBase += 1;
+    else if (i <= 2)            partsBase += 0.5;
+    else                        partsBase += 1;
+  }
+
+  // Parts avec rattachement de cet enfant
+  const partsAvecRattach = partsBase + quotientEnfant;
+
+  const revTotal = revParent + autresRev;
+  const resultDiv = document.getElementById('enfant-result');
+
+  // Besoin du revenu parent au minimum
+  if (revParent <= 0 || age < 18) {
+    resultDiv.style.display = 'none';
+    return;
+  }
+  resultDiv.style.display = 'block';
+  expandSection('s5');
+
+  // Revenu net imposable de l'enfant selon son statut
+  // (même logique pour A et B — seule la déclaration diffère, pas l'abattement)
+  let revEnfantNet;
+  if (statut === 'alternance') {
+    revEnfantNet = Math.max(0, revenus - 21203); // exonération SMIC
+  } else {
+    const abatt = Math.min(Math.max(revenus * 0.10, 495), 14171);
+    revEnfantNet = Math.max(0, revenus - abatt);
+  }
+
+  // ── SCÉNARIO A : RATTACHEMENT ──
+  // Le revenu de l'enfant s'ajoute au foyer fiscal du parent
+  const revFoyerA = revTotal + revEnfantNet;
+  const irParentA = calcIR(revFoyerA, partsAvecRattach);
+  const totalA    = irParentA; // pas d'IR séparé pour l'enfant
+
+  // ── SCÉNARIO B : DÉCLARATION SÉPARÉE ──
+  const pensionDeductible = Math.min(pension, 6674);
+  const revParentB = Math.max(0, revTotal - pensionDeductible);
+  const irParentB  = calcIR(revParentB, partsBase);
+  const irEnfantB  = calcIR(revEnfantNet, 1);
+  const totalB     = irParentB + irEnfantB;
+
+  // ── AFFICHAGE ──
+  const fmtP = n => Math.round(n).toLocaleString('fr-FR') + ' €';
+
+  document.getElementById('ra-parts').textContent      = partsAvecRattach.toFixed(1);
+  document.getElementById('ra-ir-parent').textContent  = fmtP(irParentA) + ' (revenus combinés)';
+  document.getElementById('ra-ir-enfant').textContent  = 'Inclus dans le foyer';
+  document.getElementById('ra-total').textContent      = fmtP(totalA);
+
+  document.getElementById('sb-parts').textContent      = partsBase.toFixed(1);
+  document.getElementById('sb-ir-parent').textContent  = fmtP(irParentB);
+  document.getElementById('sb-ir-enfant').textContent  = fmtP(irEnfantB);
+  document.getElementById('sb-total').textContent      = fmtP(totalB);
+
+  // ── VERDICT ──
+  const cardA   = document.getElementById('card-rattach');
+  const cardB   = document.getElementById('card-separe');
+  const verdict = document.getElementById('verdict-box');
+  const diff    = Math.abs(totalA - totalB);
+
+  cardA.classList.remove('winner','loser');
+  cardB.classList.remove('winner','loser');
+  verdict.classList.remove('win-a','win-b','tie');
+
+  const vTitle = document.getElementById('verdict-title');
+  const vDesc  = document.getElementById('verdict-desc');
+  const vGain  = document.getElementById('verdict-gain');
+  const vIcon  = document.getElementById('verdict-icon');
+
+  if (diff < 50) {
+    // Quasi-égalité
+    verdict.classList.add('tie');
+    vIcon.textContent  = '⚖️';
+    vTitle.textContent = 'Les deux options sont quasi-équivalentes';
+    vDesc.textContent  = `Différence inférieure à 50 €. D'autres critères peuvent orienter le choix (prime d'activité, bourse sur critères sociaux, couverture maladie…).`;
+    vGain.textContent  = '';
+  } else if (totalA < totalB) {
+    cardA.classList.add('winner');
+    cardB.classList.add('loser');
+    verdict.classList.add('win-a');
+    vIcon.textContent  = '✅';
+    vTitle.textContent = 'Le rattachement est plus avantageux';
+    vDesc.textContent  = `Garder l'enfant dans votre foyer fiscal coûte moins cher au total. La demi-part supplémentaire compense la non-déductibilité de la pension.`;
+    vGain.textContent  = `${fmtP(diff)} économisés`;
+  } else {
+    cardA.classList.add('loser');
+    cardB.classList.add('winner');
+    verdict.classList.add('win-b');
+    vIcon.textContent  = '✅';
+    vTitle.textContent = 'La déclaration séparée est plus avantageuse';
+    vDesc.textContent  = `La déduction de la pension alimentaire (${fmtP(pensionDeductible)}) et/ou la faible imposition de l'enfant rendent cette option plus efficace.`;
+    vGain.textContent  = `${fmtP(diff)} économisés`;
+  }
+}
+
+function requestExpert() {
+  alert('Fonctionnalité à venir — votre expert sera notifié.');
+}
+
+function resetForm() {
+  document.querySelectorAll('.field-input').forEach(i => i.value = '');
+  document.querySelectorAll('.field-select').forEach(s => s.selectedIndex = 0);
+  document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+  compute();
+}
+
+// Initialise la hauteur de s1 qui est open par défaut
+window.addEventListener('DOMContentLoaded', () => {
+  const s1 = document.getElementById('s1');
+  if (s1) {
+    const body = s1.querySelector('.section-body');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+});
+
+// Scroll reveal
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.section-block').forEach((el, i) => {
+  el.style.transitionDelay = (i * 0.08) + 's';
+  io.observe(el);
+});
+</script>
+</body>
+</html>
