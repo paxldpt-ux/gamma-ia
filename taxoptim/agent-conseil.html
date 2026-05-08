@@ -574,6 +574,22 @@
 
     .send-btn svg { width: 16px; height: 16px; }
 
+    .upload-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .upload-btn:hover { color: var(--accent-light); border-color: rgba(110,154,181,0.35); }
+
     .input-hint {
       text-align: center;
       font-size: 0.7rem;
@@ -645,7 +661,17 @@
   </div>
 
   <div class="input-area">
+    <div id="file-badge" style="display:none; margin-bottom:0.5rem; display:none; align-items:center; gap:0.5rem; font-size:0.78rem; color:var(--accent-light);">
+      <span>📎</span><span id="file-name"></span>
+      <button onclick="removeFile()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.9rem;">✕</button>
+    </div>
     <div class="input-wrap">
+      <input type="file" id="fileInput" accept=".pdf,.txt,.csv,.json" style="display:none" onchange="handleFile(this)">
+      <button class="upload-btn" onclick="document.getElementById('fileInput').click()" title="Joindre un document">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.41 17.41a2 2 0 01-2.83-2.83l8.49-8.48"/>
+        </svg>
+      </button>
       <textarea
         id="input"
         placeholder="Posez votre question fiscale…"
@@ -659,7 +685,7 @@
         </svg>
       </button>
     </div>
-    <p class="input-hint">Gamma IA IA · Sources : BOFiP · CGI · Légifrance · impots.gouv.fr · Entrée pour envoyer</p>
+    <p class="input-hint">Gamma IA · BOFiP · CGI · Légifrance · Joindre PDF, TXT, CSV · Entrée pour envoyer</p>
   </div>
 </div>
 
@@ -723,6 +749,37 @@ const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
 let history = [];
 let streaming = false;
+let attachedFile = null; // { name, text }
+
+function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const badge = document.getElementById('file-badge');
+  const nameEl = document.getElementById('file-name');
+
+  const formData = new FormData();
+  formData.append('file', file);
+  nameEl.textContent = '⏳ Lecture en cours…';
+  badge.style.display = 'flex';
+
+  fetch('/api/upload', { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) throw new Error(data.error);
+      attachedFile = { name: data.name, text: data.text };
+      nameEl.textContent = data.name;
+    })
+    .catch(err => {
+      nameEl.textContent = '⚠️ Erreur : ' + err.message;
+    });
+  input.value = '';
+}
+
+function removeFile() {
+  attachedFile = null;
+  document.getElementById('file-badge').style.display = 'none';
+  document.getElementById('file-name').textContent = '';
+}
 
 function autoResize(el) {
   el.style.height = 'auto';
@@ -854,17 +911,31 @@ function tableToHtml(block) {
 async function send() {
   if (streaming) return;
   const text = inputEl.value.trim();
-  if (!text) return;
+  if (!text && !attachedFile) return;
+
+  // Build user content with optional file
+  let userContent = text;
+  if (attachedFile) {
+    userContent = (text ? text + '\n\n' : '') +
+      `📎 **Document joint : ${attachedFile.name}**\n\n\`\`\`\n${attachedFile.text}\n\`\`\``;
+    removeFile();
+  }
 
   inputEl.value = '';
   inputEl.style.height = 'auto';
   sendBtn.disabled = true;
   streaming = true;
 
-  appendMessage('user', `<p>${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p>`);
-  history.push({ role: 'user', content: text });
+  appendMessage('user', `<p>${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}${attachedFile ? ` <span style="color:var(--accent);font-size:0.8em">📎 ${attachedFile.name}</span>` : ''}</p>`);
+  history.push({ role: 'user', content: userContent });
 
   const thinkingRow = appendThinking();
+
+  // Cold start warning after 8s with no response
+  const coldStartTimer = setTimeout(() => {
+    const ind = thinkingRow.querySelector('.thinking-indicator');
+    if (ind) ind.innerHTML = '⏳ Réveil du serveur en cours… (~30 secondes) <span class="thinking-dots"><span></span><span></span><span></span></span>';
+  }, 8000);
 
   let rawText = '';
   let aiBubble = null;
@@ -899,6 +970,7 @@ async function send() {
 
         if (data.type === 'text') {
           if (!aiBubble) {
+            clearTimeout(coldStartTimer);
             thinkingRow.remove();
             aiBubble = appendMessage('ai', '');
           }
@@ -920,9 +992,10 @@ async function send() {
   } catch (err) {
     thinkingRow.remove();
     const msg = err.message || '';
+    clearTimeout(coldStartTimer);
     const friendly = msg.includes('__overloaded__')
       ? '⏳ Les serveurs Anthropic sont surchargés en ce moment. Réessaie dans quelques secondes.'
-      : `⚠️ ${msg || 'Vérifiez que le serveur est démarré (http://localhost:3000).'}`;
+      : `⚠️ ${msg || 'Une erreur est survenue. Réessaie dans quelques instants.'}`;
     appendMessage('ai', `<div class="error-msg">${friendly}</div>`);
   }
 

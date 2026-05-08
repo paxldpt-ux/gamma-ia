@@ -2,14 +2,37 @@ require('dotenv').config({ path: require('path').join(__dirname, '.env'), overri
 const express = require('express');
 const path = require('path');
 const Anthropic = require('@anthropic-ai/sdk');
+const multer = require('multer');
+const pdfParse = require('pdf-parse');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'taxoptim')));
+
+/* ── Upload endpoint ── */
+app.post('/api/upload', upload.single('file'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Aucun fichier reçu' });
+  const { mimetype, buffer, originalname } = req.file;
+  try {
+    let text = '';
+    if (mimetype === 'application/pdf') {
+      const data = await pdfParse(buffer);
+      text = data.text;
+    } else {
+      text = buffer.toString('utf-8');
+    }
+    // Truncate to ~80k chars to stay within context limits
+    if (text.length > 80000) text = text.slice(0, 80000) + '\n\n[... document tronqué pour la longueur]';
+    res.json({ name: originalname, text });
+  } catch (err) {
+    res.status(500).json({ error: 'Impossible de lire le fichier : ' + err.message });
+  }
+});
 
 const SYSTEM_PROMPT = `Tu es Gamma IA, un conseiller fiscal français de haut niveau. Tu maîtrises l'intégralité du droit fiscal français et tu t'appuies exclusivement sur des sources officielles et fiables.
 
