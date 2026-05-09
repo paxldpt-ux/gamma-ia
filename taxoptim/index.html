@@ -399,6 +399,132 @@
 
     .card-agent .card-desc { display: none; }
 
+    /* ── DEMO SECTION ── */
+    .demo-section {
+      position: relative;
+      z-index: 10;
+      max-width: 860px;
+      margin: 0 auto 5rem;
+      padding: 0 2rem;
+      text-align: center;
+    }
+    .demo-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .demo-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .demo-sub {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+
+    /* Window chrome */
+    .demo-window {
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(8,14,26,0.95);
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(110,154,181,0.05);
+      text-align: left;
+    }
+    .demo-chrome {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.7rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border);
+    }
+    .demo-dots { display:flex; gap:6px; }
+    .demo-dots span {
+      width:11px; height:11px; border-radius:50%;
+      background: rgba(255,255,255,0.12);
+    }
+    .demo-dots span:nth-child(1){ background:#ff5f57; }
+    .demo-dots span:nth-child(2){ background:#febc2e; }
+    .demo-dots span:nth-child(3){ background:#28c840; }
+    .demo-tabs-bar { display:flex; gap:0.5rem; }
+    .demo-tab-btn {
+      font-size: 0.72rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 6px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      font-weight: 500;
+    }
+    .demo-tab-btn.active {
+      background: rgba(110,154,181,0.15);
+      color: var(--text);
+    }
+
+    /* Panels */
+    .demo-panel { padding: 1.75rem 2rem; min-height: 340px; }
+    .demo-panel.hidden { display: none; }
+
+    /* Chat panel */
+    .demo-chat { display: flex; flex-direction: column; gap: 1rem; }
+    .demo-msg { font-size: 0.85rem; line-height: 1.7; max-width: 92%; }
+    .demo-msg.user {
+      align-self: flex-end;
+      background: rgba(110,154,181,0.15);
+      border: 1px solid rgba(110,154,181,0.2);
+      border-radius: 12px 12px 2px 12px;
+      padding: 0.6rem 1rem;
+      color: var(--text);
+      font-style: italic;
+    }
+    .demo-msg.ai {
+      color: var(--text);
+      white-space: pre-wrap;
+      font-family: 'Inter', sans-serif;
+    }
+    .demo-msg.ai strong { color: var(--accent-light); }
+    .demo-msg.ai .tbl { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.82rem; }
+    .demo-msg.ai .tbl th { color: var(--muted); font-weight: 600; padding: 0.3rem 0.6rem; text-align:left; border-bottom: 1px solid var(--border); }
+    .demo-msg.ai .tbl td { padding: 0.35rem 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .demo-msg.ai .tbl td.green { color: #4ade80; font-weight: 700; }
+    .demo-msg.ai .tbl tr.total td { color: var(--accent-light); font-weight: 700; border-top: 1px solid var(--border); }
+    .demo-cursor { color: var(--accent); font-size: 1rem; animation: blink 0.8s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Simulator panel */
+    .demo-sim { max-width: 520px; margin: 0 auto; }
+    .demo-sim-title { font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:600; margin-bottom:1.25rem; color:var(--text); }
+    .demo-sim-inputs { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
+    .demo-sim-row { display:flex; justify-content:space-between; font-size:0.82rem; color:var(--muted); }
+    .demo-sim-val { color:var(--text); font-weight:500; }
+    .demo-sim-bar { height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
+    .demo-sim-fill { height:100%; background:linear-gradient(90deg,var(--accent-dark),var(--accent)); border-radius:2px; transition:width 1s ease; }
+    .demo-sim-result {
+      background: rgba(74,222,128,0.06);
+      border: 1px solid rgba(74,222,128,0.2);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      text-align: center;
+    }
+    .demo-sim-result-label { font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#4ade80; margin-bottom:0.5rem; opacity:0.8; }
+    .demo-sim-result-amount { font-family:'Space Grotesk',sans-serif; font-size:2.4rem; font-weight:700; color:#4ade80; margin-bottom:1rem; }
+    .demo-sim-result-detail { display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center; }
+    .demo-sim-badge {
+      font-size:0.72rem; padding:0.25rem 0.6rem; border-radius:20px;
+      background:rgba(74,222,128,0.1); color:#4ade80;
+      border:1px solid rgba(74,222,128,0.2);
+      opacity: 0; transform: translateY(6px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
     @media (max-width: 700px) {
       nav { padding: 1.25rem 1.5rem; }
       .nav-right { display: none; }
@@ -406,6 +532,7 @@
       .pillars { grid-template-columns: 1fr; }
       .why, .divider { padding-left: 1.5rem; padding-right: 1.5rem; }
       footer { flex-direction: column; gap: 0.75rem; text-align: center; }
+      .demo-panel { padding: 1.25rem; }
     }
   </style>
 </head>
@@ -454,6 +581,65 @@
       </div>
       <span class="card-arrow">Consulter l'agent <span>→</span></span>
     </a>
+  </div>
+</section>
+
+<!-- DEMO SECTION -->
+<section class="demo-section" id="demo-section">
+  <div class="demo-label">Démo en direct</div>
+  <h2 class="demo-title">Voyez Gamma IA à l'œuvre</h2>
+  <p class="demo-sub">Analyse de structure holding, simulation d'économies fiscales — en quelques secondes.</p>
+
+  <div class="demo-window">
+    <!-- Fake browser chrome -->
+    <div class="demo-chrome">
+      <div class="demo-dots"><span></span><span></span><span></span></div>
+      <div class="demo-tabs-bar">
+        <div class="demo-tab-btn active" data-tab="0">🤖 Agent fiscal IA</div>
+        <div class="demo-tab-btn" data-tab="1">📊 Simulateur</div>
+      </div>
+    </div>
+
+    <!-- Panel 1: Agent IA -->
+    <div class="demo-panel" id="demo-panel-0">
+      <div class="demo-chat">
+        <div class="demo-msg user">Quelle structure holding pour optimiser la fiscalité de mon groupe (CA 2M€, IS 25%) ?</div>
+        <div class="demo-msg ai" id="demo-ai-text"></div>
+        <div class="demo-cursor" id="demo-cursor">▍</div>
+      </div>
+    </div>
+
+    <!-- Panel 2: Simulator -->
+    <div class="demo-panel hidden" id="demo-panel-1">
+      <div class="demo-sim">
+        <div class="demo-sim-title">Simulateur d'optimisation fiscale</div>
+        <div class="demo-sim-inputs">
+          <div class="demo-sim-row">
+            <span>Revenus annuels</span>
+            <span class="demo-sim-val">185 000 €</span>
+          </div>
+          <div class="demo-sim-bar"><div class="demo-sim-fill" style="width:74%"></div></div>
+          <div class="demo-sim-row">
+            <span>Statut</span>
+            <span class="demo-sim-val">Dirigeant SAS</span>
+          </div>
+          <div class="demo-sim-row">
+            <span>Investissement immobilier</span>
+            <span class="demo-sim-val">320 000 €</span>
+          </div>
+          <div class="demo-sim-bar"><div class="demo-sim-fill" style="width:55%"></div></div>
+        </div>
+        <div class="demo-sim-result">
+          <div class="demo-sim-result-label">Économie fiscale estimée</div>
+          <div class="demo-sim-result-amount" id="demo-sim-amount">0 €</div>
+          <div class="demo-sim-result-detail">
+            <span class="demo-sim-badge">PER +3 200 €</span>
+            <span class="demo-sim-badge">Déficit foncier +4 800 €</span>
+            <span class="demo-sim-badge">Arbitrage rémunération +2 450 €</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -594,6 +780,137 @@ const io = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.2 });
 document.querySelectorAll('.pillar').forEach(el => io.observe(el));
+
+/* ── DEMO ANIMATION ── */
+(function() {
+  const AI_CONTENT = document.getElementById('demo-ai-text');
+  const CURSOR = document.getElementById('demo-cursor');
+  const SIM_AMOUNT = document.getElementById('demo-sim-amount');
+  const PANEL0 = document.getElementById('demo-panel-0');
+  const PANEL1 = document.getElementById('demo-panel-1');
+  const TABS = document.querySelectorAll('.demo-tab-btn');
+  const BADGES = document.querySelectorAll('.demo-sim-badge');
+
+  // Full AI response as HTML segments
+  const SEGMENTS = [
+    { type:'text', content:'## Stratégie Holding — Analyse complète\n\n' },
+    { type:'text', content:'Compte tenu de votre CA de **2 M€** et de votre imposition à **25% IS**, une structure holding animatrice offre les leviers suivants :\n\n' },
+    { type:'table', rows:[
+      ['Mécanisme fiscal','Base légale','Économie / an'],
+      ['Régime mère-fille (95% exonération)','Art. 216 CGI','182 000 €'],
+      ['Intégration fiscale de groupe','Art. 223 A CGI','97 500 €'],
+      ['Optimisation dividendes dirigeant','Art. 13 CGI','48 200 €'],
+      ['TOTAL','','327 700 €'],
+    ]},
+    { type:'text', content:'\n💡 **Point de vigilance** : le pacte Dutreil (Art. 787 B CGI) permet en parallèle d\'exonérer **75%** des droits de donation sur les titres de la holding.' },
+  ];
+
+  function renderSegments(segs) {
+    let html = '';
+    segs.forEach(s => {
+      if (s.type === 'text') {
+        let t = s.content
+          .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+          .replace(/## (.*)/g,'<span style="font-size:1rem;font-weight:700;font-family:Space Grotesk,sans-serif;color:var(--accent-light)">$1</span>')
+          .replace(/\n/g,'<br>');
+        html += t;
+      } else if (s.type === 'table') {
+        html += '<table class="tbl"><thead><tr>';
+        s.rows[0].forEach(h => html += `<th>${h}</th>`);
+        html += '</tr></thead><tbody>';
+        s.rows.slice(1).forEach((row, i) => {
+          const isTotal = i === s.rows.length - 2;
+          html += isTotal ? '<tr class="total">' : '<tr>';
+          row.forEach((cell, ci) => {
+            const isGreen = ci === 2 && cell.includes('€');
+            html += isGreen ? `<td class="green">${cell}</td>` : `<td>${cell}</td>`;
+          });
+          html += '</tr>';
+        });
+        html += '</tbody></table>';
+      }
+    });
+    return html;
+  }
+
+  let demoStarted = false;
+
+  function switchTab(idx) {
+    TABS.forEach((t,i) => t.classList.toggle('active', i === idx));
+    if (idx === 0) { PANEL0.classList.remove('hidden'); PANEL1.classList.add('hidden'); }
+    else           { PANEL1.classList.remove('hidden'); PANEL0.classList.add('hidden'); }
+  }
+
+  TABS.forEach(t => t.addEventListener('click', () => switchTab(+t.dataset.tab)));
+
+  function animateCounter(el, target, duration) {
+    const start = performance.now();
+    function step(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = '+' + Math.round(eased * target).toLocaleString('fr-FR') + ' €';
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  async function runDemo() {
+    // Phase 1: type AI response
+    AI_CONTENT.innerHTML = '';
+    CURSOR.style.display = 'inline';
+    const fullHtml = renderSegments(SEGMENTS);
+    // Typewriter on a temp div, reveal char by char as text
+    const plainText = SEGMENTS.map(s => s.type === 'text' ? s.content : '\n[tableau]\n').join('');
+    let charIdx = 0;
+    await new Promise(resolve => {
+      function typeNext() {
+        charIdx++;
+        // Reveal segments progressively based on char progress
+        const progress = charIdx / plainText.length;
+        const segsToShow = Math.ceil(progress * SEGMENTS.length);
+        AI_CONTENT.innerHTML = renderSegments(SEGMENTS.slice(0, segsToShow));
+        if (charIdx < plainText.length) {
+          setTimeout(typeNext, charIdx < 80 ? 18 : charIdx < 200 ? 8 : 4);
+        } else {
+          AI_CONTENT.innerHTML = fullHtml;
+          resolve();
+        }
+      }
+      typeNext();
+    });
+
+    CURSOR.style.display = 'none';
+    await new Promise(r => setTimeout(r, 2200));
+
+    // Phase 2: switch to simulator
+    switchTab(1);
+    await new Promise(r => setTimeout(r, 600));
+    animateCounter(SIM_AMOUNT, 10450, 1600);
+    await new Promise(r => setTimeout(r, 900));
+    BADGES.forEach((b, i) => setTimeout(() => {
+      b.style.opacity = '1'; b.style.transform = 'translateY(0)';
+    }, i * 250));
+
+    // Loop: restart after pause
+    await new Promise(r => setTimeout(r, 6000));
+    switchTab(0);
+    AI_CONTENT.innerHTML = '';
+    CURSOR.style.display = 'inline';
+    SIM_AMOUNT.textContent = '0 €';
+    BADGES.forEach(b => { b.style.opacity='0'; b.style.transform='translateY(6px)'; });
+    await new Promise(r => setTimeout(r, 800));
+    runDemo();
+  }
+
+  // Start when section enters viewport
+  const demoObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !demoStarted) {
+      demoStarted = true;
+      setTimeout(runDemo, 400);
+    }
+  }, { threshold: 0.3 });
+  demoObs.observe(document.getElementById('demo-section'));
+})();
 </script>
 </body>
 </html>
