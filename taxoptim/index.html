@@ -401,138 +401,109 @@
 
     /* ── DEMO SECTION ── */
     .demo-section {
-      position: relative;
-      z-index: 10;
-      max-width: 860px;
-      margin: 0 auto 5rem;
-      padding: 0 2rem;
-      text-align: center;
+      position: relative; z-index: 10;
+      max-width: 860px; margin: 0 auto 5rem; padding: 0 2rem; text-align: center;
     }
-    .demo-label {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 1rem;
-    }
-    .demo-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(1.1rem, 2.2vw, 1.5rem);
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.75rem;
-    }
-    .demo-sub {
-      font-size: 0.95rem;
-      color: var(--muted);
-      margin-bottom: 2.5rem;
-    }
+    .demo-label { font-size:.68rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; }
+    .demo-title { font-family:'Space Grotesk',sans-serif; font-size:clamp(1rem,2vw,1.35rem); font-weight:600; letter-spacing:-0.02em; margin-bottom:.6rem; }
+    .demo-sub { font-size:.9rem; color:var(--muted); margin-bottom:2.2rem; }
 
-    /* Window chrome */
+    /* Window */
     .demo-window {
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(8,14,26,0.95);
-      overflow: hidden;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(110,154,181,0.05);
-      text-align: left;
+      border-radius:14px; border:1px solid var(--border);
+      background:rgba(8,14,26,0.97); overflow:hidden;
+      box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(110,154,181,.05);
+      text-align:left;
     }
     .demo-chrome {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.7rem 1rem;
-      background: rgba(255,255,255,0.03);
-      border-bottom: 1px solid var(--border);
+      display:flex; align-items:center; gap:1rem; padding:.65rem 1rem;
+      background:rgba(255,255,255,.03); border-bottom:1px solid var(--border);
     }
     .demo-dots { display:flex; gap:6px; }
-    .demo-dots span {
-      width:11px; height:11px; border-radius:50%;
-      background: rgba(255,255,255,0.12);
-    }
+    .demo-dots span { width:11px; height:11px; border-radius:50%; }
     .demo-dots span:nth-child(1){ background:#ff5f57; }
     .demo-dots span:nth-child(2){ background:#febc2e; }
     .demo-dots span:nth-child(3){ background:#28c840; }
-    .demo-tabs-bar { display:flex; gap:0.5rem; }
-    .demo-tab-btn {
-      font-size: 0.72rem;
-      padding: 0.3rem 0.75rem;
-      border-radius: 6px;
-      color: var(--muted);
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      font-weight: 500;
-    }
-    .demo-tab-btn.active {
-      background: rgba(110,154,181,0.15);
-      color: var(--text);
+    .demo-chrome-url {
+      flex:1; background:rgba(255,255,255,.05); border-radius:6px;
+      padding:.22rem .75rem; font-size:.72rem; color:var(--muted);
+      font-family:monospace; transition:all .5s ease;
     }
 
-    /* Panels */
-    .demo-panel { padding: 1.75rem 2rem; min-height: 340px; }
-    .demo-panel.hidden { display: none; }
+    /* Slide track — swipe horizontale */
+    .demo-track-wrap { overflow:hidden; }
+    .demo-track {
+      display:flex; width:200%;
+      transition:transform .75s cubic-bezier(.77,0,.18,1);
+    }
+    .demo-slide { width:50%; padding:1.75rem 2rem; min-height:380px; box-sizing:border-box; }
 
-    /* Chat panel */
-    .demo-chat { display: flex; flex-direction: column; gap: 1rem; }
-    .demo-msg { font-size: 0.85rem; line-height: 1.7; max-width: 92%; }
+    /* Chat */
+    .demo-chat { display:flex; flex-direction:column; gap:.9rem; }
+    .demo-msg { font-size:.84rem; line-height:1.7; max-width:93%; }
     .demo-msg.user {
-      align-self: flex-end;
-      background: rgba(110,154,181,0.15);
-      border: 1px solid rgba(110,154,181,0.2);
-      border-radius: 12px 12px 2px 12px;
-      padding: 0.6rem 1rem;
-      color: var(--text);
-      font-style: italic;
+      align-self:flex-end;
+      background:rgba(110,154,181,.15); border:1px solid rgba(110,154,181,.2);
+      border-radius:12px 12px 2px 12px; padding:.55rem .95rem;
+      color:var(--text); font-style:italic;
     }
-    .demo-msg.ai {
-      color: var(--text);
-      white-space: pre-wrap;
-      font-family: 'Inter', sans-serif;
-    }
-    .demo-msg.ai strong { color: var(--accent-light); }
-    .demo-msg.ai .tbl { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.82rem; }
-    .demo-msg.ai .tbl th { color: var(--muted); font-weight: 600; padding: 0.3rem 0.6rem; text-align:left; border-bottom: 1px solid var(--border); }
-    .demo-msg.ai .tbl td { padding: 0.35rem 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
-    .demo-msg.ai .tbl td.green { color: #4ade80; font-weight: 700; }
-    .demo-msg.ai .tbl tr.total td { color: var(--accent-light); font-weight: 700; border-top: 1px solid var(--border); }
-    .demo-cursor { color: var(--accent); font-size: 1rem; animation: blink 0.8s step-end infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
+    .demo-msg.ai { color:var(--text); }
+    .demo-cursor { color:var(--accent); animation:blink .8s step-end infinite; }
+    @keyframes blink { 50%{opacity:0} }
 
-    /* Simulator panel */
-    .demo-sim { max-width: 520px; margin: 0 auto; }
+    /* Schemas */
+    .demo-schemas { display:flex; flex-direction:column; gap:.85rem; margin-top:.5rem; }
+    .schema-card {
+      background:rgba(255,255,255,.03); border:1px solid var(--border);
+      border-radius:10px; padding:.9rem 1.1rem;
+      opacity:0; transform:translateY(10px);
+      transition:opacity .5s ease, transform .5s ease;
+    }
+    .schema-card.show { opacity:1; transform:translateY(0); }
+    .schema-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:.65rem; }
+    .schema-name { font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); }
+    .schema-eco { font-size:.82rem; font-weight:700; color:#4ade80; }
+    .schema-diagram { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+    .sn {
+      padding:.25rem .6rem; border-radius:6px; font-size:.75rem; font-weight:600;
+      white-space:nowrap;
+    }
+    .sn.h { background:rgba(110,154,181,.22); border:1px solid rgba(110,154,181,.4); color:var(--accent-light); }
+    .sn.o { background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--text); }
+    .sn.p { background:rgba(110,154,181,.08); border:1px solid var(--border); color:var(--muted); }
+    .sn.you { background:rgba(110,154,181,.12); border:1px solid rgba(110,154,181,.25); color:var(--accent-light); font-style:italic; }
+    .sarr { color:var(--muted); font-size:.8rem; }
+    .schema-note { font-size:.72rem; color:var(--muted); margin-top:.5rem; font-style:italic; }
+
+    /* Simulator slide */
+    .demo-sim { max-width:520px; margin:0 auto; }
     .demo-sim-title { font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:600; margin-bottom:1.25rem; color:var(--text); }
-    .demo-sim-inputs { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
-    .demo-sim-row { display:flex; justify-content:space-between; font-size:0.82rem; color:var(--muted); }
+    .demo-sim-inputs { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1.5rem; }
+    .demo-sim-row { display:flex; justify-content:space-between; font-size:.82rem; color:var(--muted); }
     .demo-sim-val { color:var(--text); font-weight:500; }
-    .demo-sim-bar { height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
-    .demo-sim-fill { height:100%; background:linear-gradient(90deg,var(--accent-dark),var(--accent)); border-radius:2px; transition:width 1s ease; }
+    .demo-sim-bar { height:4px; background:rgba(255,255,255,.06); border-radius:2px; overflow:hidden; }
+    .demo-sim-fill { height:100%; background:linear-gradient(90deg,var(--accent-dark),var(--accent)); border-radius:2px; }
     .demo-sim-result {
-      background: rgba(74,222,128,0.06);
-      border: 1px solid rgba(74,222,128,0.2);
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      text-align: center;
+      background:rgba(74,222,128,.06); border:1px solid rgba(74,222,128,.2);
+      border-radius:12px; padding:1.25rem 1.5rem; text-align:center;
     }
-    .demo-sim-result-label { font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#4ade80; margin-bottom:0.5rem; opacity:0.8; }
+    .demo-sim-result-label { font-size:.75rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#4ade80; margin-bottom:.5rem; }
     .demo-sim-result-amount { font-family:'Space Grotesk',sans-serif; font-size:2.4rem; font-weight:700; color:#4ade80; margin-bottom:1rem; }
-    .demo-sim-result-detail { display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center; }
+    .demo-sim-result-detail { display:flex; flex-wrap:wrap; gap:.4rem; justify-content:center; }
     .demo-sim-badge {
-      font-size:0.72rem; padding:0.25rem 0.6rem; border-radius:20px;
-      background:rgba(74,222,128,0.1); color:#4ade80;
-      border:1px solid rgba(74,222,128,0.2);
-      opacity: 0; transform: translateY(6px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
+      font-size:.72rem; padding:.25rem .6rem; border-radius:20px;
+      background:rgba(74,222,128,.1); color:#4ade80; border:1px solid rgba(74,222,128,.2);
+      opacity:0; transform:translateY(6px); transition:opacity .4s ease,transform .4s ease;
     }
 
-    @media (max-width: 700px) {
-      nav { padding: 1.25rem 1.5rem; }
-      .nav-right { display: none; }
-      .hero { padding: 6rem 1.5rem 4rem; }
-      .pillars { grid-template-columns: 1fr; }
-      .why, .divider { padding-left: 1.5rem; padding-right: 1.5rem; }
-      footer { flex-direction: column; gap: 0.75rem; text-align: center; }
-      .demo-panel { padding: 1.25rem; }
+    @media (max-width:700px) {
+      nav { padding:1.25rem 1.5rem; }
+      .nav-right { display:none; }
+      .hero { padding:6rem 1.5rem 4rem; }
+      .pillars { grid-template-columns:1fr; }
+      .why, .divider { padding-left:1.5rem; padding-right:1.5rem; }
+      footer { flex-direction:column; gap:.75rem; text-align:center; }
+      .demo-slide { padding:1.25rem; }
     }
   </style>
 </head>
@@ -588,52 +559,50 @@
 <section class="demo-section" id="demo-section">
   <div class="demo-label">Démo en direct</div>
   <h2 class="demo-title">Voyez Gamma IA à l'œuvre</h2>
-  <p class="demo-sub">Analyse de structure holding, simulation d'économies fiscales — en quelques secondes.</p>
+  <p class="demo-sub">Structuration holding, schémas fiscaux, simulation d'économies — en temps réel.</p>
 
   <div class="demo-window">
-    <!-- Fake browser chrome -->
     <div class="demo-chrome">
       <div class="demo-dots"><span></span><span></span><span></span></div>
+      <div class="demo-chrome-url" id="demo-url">gamma-ia.com · Agent fiscal IA</div>
     </div>
+    <div class="demo-track-wrap">
+      <div class="demo-track" id="demo-track">
 
-    <!-- Panel 1: Agent IA -->
-    <div class="demo-panel" id="demo-panel-0">
-      <div class="demo-chat">
-        <div class="demo-msg user">Quelle structure holding pour optimiser la fiscalité de mon groupe (CA 2M€, IS 25%) ?</div>
-        <div class="demo-msg ai" id="demo-ai-text"></div>
-        <div class="demo-cursor" id="demo-cursor">▍</div>
-      </div>
-    </div>
-
-    <!-- Panel 2: Simulator -->
-    <div class="demo-panel hidden" id="demo-panel-1">
-      <div class="demo-sim">
-        <div class="demo-sim-title">Simulateur d'optimisation fiscale</div>
-        <div class="demo-sim-inputs">
-          <div class="demo-sim-row">
-            <span>Revenus annuels</span>
-            <span class="demo-sim-val">185 000 €</span>
-          </div>
-          <div class="demo-sim-bar"><div class="demo-sim-fill" style="width:74%"></div></div>
-          <div class="demo-sim-row">
-            <span>Statut</span>
-            <span class="demo-sim-val">Dirigeant SAS</span>
-          </div>
-          <div class="demo-sim-row">
-            <span>Investissement immobilier</span>
-            <span class="demo-sim-val">320 000 €</span>
-          </div>
-          <div class="demo-sim-bar"><div class="demo-sim-fill" style="width:55%"></div></div>
-        </div>
-        <div class="demo-sim-result">
-          <div class="demo-sim-result-label">Économie fiscale estimée</div>
-          <div class="demo-sim-result-amount" id="demo-sim-amount">0 €</div>
-          <div class="demo-sim-result-detail">
-            <span class="demo-sim-badge">PER +3 200 €</span>
-            <span class="demo-sim-badge">Déficit foncier +4 800 €</span>
-            <span class="demo-sim-badge">Arbitrage rémunération +2 450 €</span>
+        <!-- Slide 0 : Agent IA -->
+        <div class="demo-slide">
+          <div class="demo-chat">
+            <div class="demo-msg user">Proposez-moi plusieurs schémas de restructuration holding pour optimiser la fiscalité de mon groupe (CA 2,4M€, IS 25%).</div>
+            <div class="demo-msg ai">
+              <span id="demo-intro"></span><span id="demo-cursor-intro">▍</span>
+              <div class="demo-schemas" id="demo-schemas"></div>
+            </div>
           </div>
         </div>
+
+        <!-- Slide 1 : Simulateur -->
+        <div class="demo-slide">
+          <div class="demo-sim">
+            <div class="demo-sim-title">Simulateur d'optimisation fiscale</div>
+            <div class="demo-sim-inputs">
+              <div class="demo-sim-row"><span>Revenus annuels</span><span class="demo-sim-val">185 000 €</span></div>
+              <div class="demo-sim-bar"><div class="demo-sim-fill" style="width:74%"></div></div>
+              <div class="demo-sim-row"><span>Statut</span><span class="demo-sim-val">Dirigeant SAS</span></div>
+              <div class="demo-sim-row"><span>Investissement immobilier</span><span class="demo-sim-val">320 000 €</span></div>
+              <div class="demo-sim-bar"><div class="demo-sim-fill" style="width:55%"></div></div>
+            </div>
+            <div class="demo-sim-result">
+              <div class="demo-sim-result-label">Économie fiscale estimée</div>
+              <div class="demo-sim-result-amount" id="demo-sim-amount">0 €</div>
+              <div class="demo-sim-result-detail">
+                <span class="demo-sim-badge">PER +3 200 €</span>
+                <span class="demo-sim-badge">Déficit foncier +4 800 €</span>
+                <span class="demo-sim-badge">Arbitrage rémunération +2 450 €</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -779,133 +748,127 @@ document.querySelectorAll('.pillar').forEach(el => io.observe(el));
 
 /* ── DEMO ANIMATION ── */
 (function() {
-  const AI_CONTENT = document.getElementById('demo-ai-text');
-  const CURSOR = document.getElementById('demo-cursor');
-  const SIM_AMOUNT = document.getElementById('demo-sim-amount');
-  const PANEL0 = document.getElementById('demo-panel-0');
-  const PANEL1 = document.getElementById('demo-panel-1');
-  const TABS = document.querySelectorAll('.demo-tab-btn');
-  const BADGES = document.querySelectorAll('.demo-sim-badge');
+  const TRACK   = document.getElementById('demo-track');
+  const INTRO   = document.getElementById('demo-intro');
+  const CURSOR  = document.getElementById('demo-cursor-intro');
+  const SCHEMAS = document.getElementById('demo-schemas');
+  const AMOUNT  = document.getElementById('demo-sim-amount');
+  const BADGES  = document.querySelectorAll('.demo-sim-badge');
+  const URL_BAR = document.getElementById('demo-url');
 
-  // Full AI response as HTML segments
-  const SEGMENTS = [
-    { type:'text', content:'## Stratégie Holding — Analyse complète\n\n' },
-    { type:'text', content:'Compte tenu de votre CA de **2 M€** et de votre imposition à **25% IS**, une structure holding animatrice offre les leviers suivants :\n\n' },
-    { type:'table', rows:[
-      ['Mécanisme fiscal','Base légale','Économie / an'],
-      ['Régime mère-fille (95% exonération)','Art. 216 CGI','182 000 €'],
-      ['Intégration fiscale de groupe','Art. 223 A CGI','97 500 €'],
-      ['Optimisation dividendes dirigeant','Art. 13 CGI','48 200 €'],
-      ['TOTAL','','327 700 €'],
-    ]},
-    { type:'text', content:'\n💡 **Point de vigilance** : le pacte Dutreil (Art. 787 B CGI) permet en parallèle d\'exonérer **75%** des droits de donation sur les titres de la holding.' },
+  const INTRO_TEXT = 'Voici 3 schémas de restructuration adaptés à votre situation :\n\n';
+
+  const SCHEMAS_DATA = [
+    {
+      name: 'Schéma 1 — Holding Pure (Régime Mère-Fille)',
+      eco: '+ 182 000 €/an',
+      diagram: `<span class="sn you">Vous (dirigeant)</span><span class="sarr">→ 100%</span><span class="sn h">SAS Holding</span><span class="sarr">→ 95% exonérés</span><span class="sn o">SAS Opérationnelle</span>`,
+      note: 'Art. 216 CGI — dividendes quasi-exonérés IS au niveau holding'
+    },
+    {
+      name: 'Schéma 2 — Intégration Fiscale de Groupe',
+      eco: '+ 97 500 €/an',
+      diagram: `<span class="sn h">Holding SAS (tête)</span><span class="sarr">→</span><span class="sn o">SAS A (bénéf. +1,2M€)</span><span class="sarr">+</span><span class="sn p">SAS B (déficit −280k€)</span>`,
+      note: 'Art. 223 A CGI — compensation pertes/profits entre filiales'
+    },
+    {
+      name: 'Schéma 3 — OBO + SCI IS (Patrimoine & Transmission)',
+      eco: '+ 248 200 €/an',
+      diagram: `<span class="sn you">Vous</span><span class="sarr">→ cession</span><span class="sn h">SAS Holding</span><span class="sarr">→</span><span class="sn o">SCI IS</span><span class="sarr">+</span><span class="sn p">SAS Op.</span>`,
+      note: 'Art. 787 B CGI — Dutreil 75% + revenus locatifs défiscalisés'
+    },
   ];
 
-  function renderSegments(segs) {
-    let html = '';
-    segs.forEach(s => {
-      if (s.type === 'text') {
-        let t = s.content
-          .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-          .replace(/## (.*)/g,'<span style="font-size:1rem;font-weight:700;font-family:Space Grotesk,sans-serif;color:var(--accent-light)">$1</span>')
-          .replace(/\n/g,'<br>');
-        html += t;
-      } else if (s.type === 'table') {
-        html += '<table class="tbl"><thead><tr>';
-        s.rows[0].forEach(h => html += `<th>${h}</th>`);
-        html += '</tr></thead><tbody>';
-        s.rows.slice(1).forEach((row, i) => {
-          const isTotal = i === s.rows.length - 2;
-          html += isTotal ? '<tr class="total">' : '<tr>';
-          row.forEach((cell, ci) => {
-            const isGreen = ci === 2 && cell.includes('€');
-            html += isGreen ? `<td class="green">${cell}</td>` : `<td>${cell}</td>`;
-          });
-          html += '</tr>';
-        });
-        html += '</tbody></table>';
+  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+  function typeText(el, text, speed=28) {
+    return new Promise(resolve => {
+      let i = 0;
+      function tick() {
+        el.innerHTML = text.slice(0,i).replace(/\n/g,'<br>');
+        i++;
+        if(i <= text.length) setTimeout(tick, speed);
+        else resolve();
       }
+      tick();
     });
-    return html;
   }
 
-  let demoStarted = false;
-
-  function switchTab(idx) {
-    TABS.forEach((t,i) => t.classList.toggle('active', i === idx));
-    if (idx === 0) { PANEL0.classList.remove('hidden'); PANEL1.classList.add('hidden'); }
-    else           { PANEL1.classList.remove('hidden'); PANEL0.classList.add('hidden'); }
+  function counter(el, target, ms) {
+    const t0 = performance.now();
+    return new Promise(resolve => {
+      function step(now) {
+        const p = Math.min((now-t0)/ms, 1);
+        const e = 1-Math.pow(1-p,3);
+        el.textContent = '+' + Math.round(e*target).toLocaleString('fr-FR') + ' €';
+        if(p<1) requestAnimationFrame(step); else resolve();
+      }
+      requestAnimationFrame(step);
+    });
   }
 
-  TABS.forEach(t => t.addEventListener('click', () => switchTab(+t.dataset.tab)));
-
-  function animateCounter(el, target, duration) {
-    const start = performance.now();
-    function step(now) {
-      const p = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = '+' + Math.round(eased * target).toLocaleString('fr-FR') + ' €';
-      if (p < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
+  function addSchema(data) {
+    const card = document.createElement('div');
+    card.className = 'schema-card';
+    card.innerHTML = `
+      <div class="schema-head">
+        <span class="schema-name">${data.name}</span>
+        <span class="schema-eco">${data.eco}</span>
+      </div>
+      <div class="schema-diagram">${data.diagram}</div>
+      <div class="schema-note">${data.note}</div>`;
+    SCHEMAS.appendChild(card);
+    requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('show')));
+    return sleep(900);
   }
+
+  function swipeTo(idx) {
+    TRACK.style.transform = `translateX(-${idx*50}%)`;
+  }
+
+  let started = false;
 
   async function runDemo() {
-    // Phase 1: type AI response
-    AI_CONTENT.innerHTML = '';
+    // Reset
+    INTRO.innerHTML = '';
     CURSOR.style.display = 'inline';
-    const fullHtml = renderSegments(SEGMENTS);
-    // Typewriter on a temp div, reveal char by char as text
-    const plainText = SEGMENTS.map(s => s.type === 'text' ? s.content : '\n[tableau]\n').join('');
-    let charIdx = 0;
-    await new Promise(resolve => {
-      function typeNext() {
-        charIdx++;
-        // Reveal segments progressively based on char progress
-        const progress = charIdx / plainText.length;
-        const segsToShow = Math.ceil(progress * SEGMENTS.length);
-        AI_CONTENT.innerHTML = renderSegments(SEGMENTS.slice(0, segsToShow));
-        if (charIdx < plainText.length) {
-          setTimeout(typeNext, charIdx < 80 ? 18 : charIdx < 200 ? 8 : 4);
-        } else {
-          AI_CONTENT.innerHTML = fullHtml;
-          resolve();
-        }
-      }
-      typeNext();
-    });
+    SCHEMAS.innerHTML = '';
+    AMOUNT.textContent = '0 €';
+    BADGES.forEach(b=>{ b.style.opacity='0'; b.style.transform='translateY(6px)'; });
+    swipeTo(0);
+    URL_BAR.textContent = 'gamma-ia.com · Agent fiscal IA';
+    await sleep(400);
 
+    // Intro typing
+    await typeText(INTRO, INTRO_TEXT, 22);
     CURSOR.style.display = 'none';
-    await new Promise(r => setTimeout(r, 2200));
 
-    // Phase 2: switch to simulator
-    switchTab(1);
-    await new Promise(r => setTimeout(r, 600));
-    animateCounter(SIM_AMOUNT, 10450, 1600);
-    await new Promise(r => setTimeout(r, 900));
-    BADGES.forEach((b, i) => setTimeout(() => {
-      b.style.opacity = '1'; b.style.transform = 'translateY(0)';
-    }, i * 250));
+    // Schemas appearing one by one
+    for(const s of SCHEMAS_DATA) {
+      await addSchema(s);
+      await sleep(600);
+    }
+    await sleep(2200);
 
-    // Loop: restart after pause
-    await new Promise(r => setTimeout(r, 6000));
-    switchTab(0);
-    AI_CONTENT.innerHTML = '';
-    CURSOR.style.display = 'inline';
-    SIM_AMOUNT.textContent = '0 €';
-    BADGES.forEach(b => { b.style.opacity='0'; b.style.transform='translateY(6px)'; });
-    await new Promise(r => setTimeout(r, 800));
+    // Swipe transition vers simulateur
+    URL_BAR.textContent = 'gamma-ia.com · Simulateur fiscal';
+    swipeTo(1);
+    await sleep(900);
+
+    // Simulateur animate
+    await counter(AMOUNT, 10450, 1800);
+    await sleep(700);
+    BADGES.forEach((b,i) => setTimeout(()=>{ b.style.opacity='1'; b.style.transform='translateY(0)'; }, i*280));
+
+    // Pause puis boucle
+    await sleep(5500);
     runDemo();
   }
 
-  // Start when section enters viewport
-  const demoObs = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && !demoStarted) {
-      demoStarted = true;
-      setTimeout(runDemo, 400);
-    }
-  }, { threshold: 0.3 });
-  demoObs.observe(document.getElementById('demo-section'));
+  const obs = new IntersectionObserver(entries => {
+    if(entries[0].isIntersecting && !started) { started=true; setTimeout(runDemo,500); }
+  }, { threshold:0.3 });
+  obs.observe(document.getElementById('demo-section'));
 })();
 </script>
 </body>
