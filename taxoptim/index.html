@@ -760,22 +760,70 @@ document.querySelectorAll('.pillar').forEach(el => io.observe(el));
 
   const SCHEMAS_DATA = [
     {
-      name: 'Schéma 1 — Holding Pure (Régime Mère-Fille)',
-      eco: '+ 182 000 €/an',
-      diagram: `<span class="sn you">Vous (dirigeant)</span><span class="sarr">→ 100%</span><span class="sn h">SAS Holding</span><span class="sarr">→ 95% exonérés</span><span class="sn o">SAS Opérationnelle</span>`,
-      note: 'Art. 216 CGI — dividendes quasi-exonérés IS au niveau holding'
+      name: 'Schéma 1 — Holding Pure · Régime Mère-Fille',
+      eco: '+182 000 €/an',
+      svg: `<svg viewBox="0 0 420 218" width="100%" style="max-height:218px;margin-top:0.4rem">
+        <rect x="155" y="8" width="110" height="32" rx="3" fill="rgba(110,154,181,0.12)" stroke="rgba(110,154,181,0.45)" stroke-width="1.2"/>
+        <text x="210" y="28" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#a2bfd4" font-weight="600">Vous (dirigeant)</text>
+        <line x1="210" y1="40" x2="210" y2="68" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <text x="216" y="58" font-family="Inter,sans-serif" font-size="9.5" fill="rgba(110,154,181,0.65)">100%</text>
+        <rect x="105" y="68" width="210" height="44" rx="3" fill="rgba(110,154,181,0.22)" stroke="#6e9ab5" stroke-width="1.5"/>
+        <text x="210" y="88" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="#edf2ff" font-weight="700">SAS HOLDING</text>
+        <text x="210" y="104" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#a2bfd4">Holding animatrice</text>
+        <line x1="210" y1="112" x2="210" y2="144" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <rect x="220" y="120" width="188" height="22" rx="11" fill="rgba(74,222,128,0.12)" stroke="rgba(74,222,128,0.32)" stroke-width="1"/>
+        <text x="314" y="135" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#4ade80" font-weight="700">+182 000 €/an · Art. 216 CGI</text>
+        <rect x="70" y="144" width="280" height="44" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(110,154,181,0.35)" stroke-width="1.2"/>
+        <text x="210" y="163" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="#edf2ff" font-weight="600">SAS Opérationnelle</text>
+        <text x="210" y="180" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#6b7fa0">CA 2,4M€ — IS 25%</text>
+        <text x="8" y="212" font-family="Inter,sans-serif" font-size="8.5" fill="rgba(110,154,181,0.45)" font-style="italic">95% des dividendes remontés quasi-exonérés au niveau de la holding</text>
+      </svg>`
     },
     {
       name: 'Schéma 2 — Intégration Fiscale de Groupe',
-      eco: '+ 97 500 €/an',
-      diagram: `<span class="sn h">Holding SAS (tête)</span><span class="sarr">→</span><span class="sn o">SAS A (bénéf. +1,2M€)</span><span class="sarr">+</span><span class="sn p">SAS B (déficit −280k€)</span>`,
-      note: 'Art. 223 A CGI — compensation pertes/profits entre filiales'
+      eco: '+97 500 €/an',
+      svg: `<svg viewBox="0 0 500 210" width="100%" style="max-height:210px;margin-top:0.4rem">
+        <rect x="150" y="8" width="200" height="44" rx="3" fill="rgba(110,154,181,0.22)" stroke="#6e9ab5" stroke-width="1.5"/>
+        <text x="250" y="28" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="#edf2ff" font-weight="700">SAS HOLDING</text>
+        <text x="250" y="44" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#a2bfd4">Tête de groupe · Art. 223 A CGI</text>
+        <line x1="250" y1="52" x2="250" y2="80" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <line x1="118" y1="80" x2="382" y2="80" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <line x1="118" y1="80" x2="118" y2="108" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <line x1="382" y1="80" x2="382" y2="108" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <rect x="28" y="108" width="180" height="52" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(110,154,181,0.35)" stroke-width="1.2"/>
+        <text x="118" y="130" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#edf2ff" font-weight="600">SAS A</text>
+        <text x="118" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#6b7fa0">Bénéfice +1 200 000 €</text>
+        <rect x="292" y="108" width="180" height="52" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(110,154,181,0.35)" stroke-width="1.2"/>
+        <text x="382" y="130" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#edf2ff" font-weight="600">SAS B</text>
+        <text x="382" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#6b7fa0">Déficit −280 000 €</text>
+        <rect x="145" y="176" width="210" height="26" rx="13" fill="rgba(74,222,128,0.12)" stroke="rgba(74,222,128,0.32)" stroke-width="1"/>
+        <text x="250" y="193" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4ade80" font-weight="700">+97 500 €/an · compensation IS</text>
+      </svg>`
     },
     {
-      name: 'Schéma 3 — OBO + SCI IS (Patrimoine & Transmission)',
-      eco: '+ 248 200 €/an',
-      diagram: `<span class="sn you">Vous</span><span class="sarr">→ cession</span><span class="sn h">SAS Holding</span><span class="sarr">→</span><span class="sn o">SCI IS</span><span class="sarr">+</span><span class="sn p">SAS Op.</span>`,
-      note: 'Art. 787 B CGI — Dutreil 75% + revenus locatifs défiscalisés'
+      name: 'Schéma 3 — OBO + SCI IS · Patrimoine & Transmission',
+      eco: '+248 200 €/an',
+      svg: `<svg viewBox="0 0 500 210" width="100%" style="max-height:210px;margin-top:0.4rem">
+        <rect x="8" y="16" width="96" height="36" rx="3" fill="rgba(110,154,181,0.12)" stroke="rgba(110,154,181,0.45)" stroke-width="1.2"/>
+        <text x="56" y="38" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#a2bfd4" font-weight="600">Vous</text>
+        <line x1="104" y1="34" x2="168" y2="34" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <text x="136" y="28" text-anchor="middle" font-family="Inter,sans-serif" font-size="8.5" fill="rgba(110,154,181,0.6)">cession LBO</text>
+        <rect x="168" y="12" width="188" height="44" rx="3" fill="rgba(110,154,181,0.22)" stroke="#6e9ab5" stroke-width="1.5"/>
+        <text x="262" y="32" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="#edf2ff" font-weight="700">SAS HOLDING</text>
+        <text x="262" y="48" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#a2bfd4">Holding OBO</text>
+        <line x1="262" y1="56" x2="262" y2="84" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <line x1="152" y1="84" x2="370" y2="84" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <line x1="152" y1="84" x2="152" y2="108" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <line x1="370" y1="84" x2="370" y2="108" stroke="rgba(110,154,181,0.55)" stroke-width="1.5"/>
+        <rect x="52" y="108" width="200" height="52" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(110,154,181,0.35)" stroke-width="1.2"/>
+        <text x="152" y="130" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#edf2ff" font-weight="600">SCI IS</text>
+        <text x="152" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#6b7fa0">Revenus locatifs défiscalisés</text>
+        <rect x="270" y="108" width="200" height="52" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(110,154,181,0.35)" stroke-width="1.2"/>
+        <text x="370" y="130" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#edf2ff" font-weight="600">SAS Opérationnelle</text>
+        <text x="370" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#6b7fa0">Activité commerciale</text>
+        <rect x="110" y="176" width="280" height="26" rx="13" fill="rgba(74,222,128,0.12)" stroke="rgba(74,222,128,0.32)" stroke-width="1"/>
+        <text x="250" y="193" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4ade80" font-weight="700">+248 200 €/an · Art. 787 B CGI (Dutreil 75%)</text>
+      </svg>`
     },
   ];
 
@@ -815,11 +863,10 @@ document.querySelectorAll('.pillar').forEach(el => io.observe(el));
         <span class="schema-name">${data.name}</span>
         <span class="schema-eco">${data.eco}</span>
       </div>
-      <div class="schema-diagram">${data.diagram}</div>
-      <div class="schema-note">${data.note}</div>`;
+      ${data.svg}`;
     SCHEMAS.appendChild(card);
     requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('show')));
-    return sleep(900);
+    return sleep(1100);
   }
 
   function swipeTo(idx) {
