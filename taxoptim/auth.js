@@ -188,31 +188,39 @@ const GammaAuth = {
   _bindModal(el, onSuccess) {
     let isLogin = false;
 
+    // Sur page protégée (agent/estimation), fermer = retour accueil
+    const isProtectedPage = window.location.pathname.includes('agent-conseil') || window.location.pathname.includes('estimation');
     const close = () => {
+      if (isProtectedPage) { window.location.href = 'index.html'; return; }
       el.style.opacity = '0';
       el.querySelector('.auth-card').style.transform = 'translateY(24px)';
       setTimeout(() => el.remove(), 350);
     };
 
-    el.querySelector('#auth-close').onclick = close;
-    el.addEventListener('click', e => { if (e.target === el) close(); });
+    // Sur page protégée, pas de croix ni clic extérieur pour fermer
+    if (isProtectedPage) {
+      el.querySelector('#auth-close').style.display = 'none';
+    } else {
+      el.querySelector('#auth-close').onclick = close;
+      el.addEventListener('click', e => { if (e.target === el) close(); });
+    }
 
     // Toggle register / login
-    el.querySelector('#auth-toggle').onclick = () => {
+    const toggle = () => {
       isLogin = !isLogin;
       el.querySelector('#auth-title').textContent = isLogin ? 'Se connecter' : 'Créer votre compte';
       el.querySelector('#auth-sub').textContent = isLogin ? 'Content de vous revoir !' : 'Accédez à l\'agent fiscal IA et au simulateur';
       el.querySelector('#field-name').style.display = isLogin ? 'none' : 'block';
       el.querySelector('#auth-submit').textContent = isLogin ? 'Se connecter' : 'Créer mon compte';
-      el.querySelector('#auth-toggle').textContent = isLogin ? 'Créer un compte' : 'Se connecter';
       el.querySelector('#auth-switch').innerHTML = isLogin
-        ? 'Pas encore de compte ? <a id="auth-toggle">Créer un compte</a>'
-        : 'Déjà un compte ? <a id="auth-toggle">Se connecter</a>';
-      el.querySelector('#auth-toggle').onclick = arguments.callee.bind(this);
+        ? 'Pas encore de compte ? <a id="auth-toggle" style="color:#a2bfd4;cursor:pointer;font-weight:500">Créer un compte</a>'
+        : 'Déjà un compte ? <a id="auth-toggle" style="color:#a2bfd4;cursor:pointer;font-weight:500">Se connecter</a>';
+      el.querySelector('#auth-toggle').onclick = toggle;
       el.querySelector('#auth-error').style.display = 'none';
       el.querySelector('#auth-password').setAttribute('autocomplete', isLogin ? 'current-password' : 'new-password');
       el.querySelector('#pw-strength').style.display = isLogin ? 'none' : '';
     };
+    el.querySelector('#auth-toggle').onclick = toggle;
 
     // Password show/hide
     el.querySelector('#toggle-pw').onclick = () => {
