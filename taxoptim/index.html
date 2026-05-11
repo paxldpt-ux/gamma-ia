@@ -582,7 +582,7 @@
   </p>
 
   <div class="cards">
-    <a class="card" href="estimation.html">
+    <a class="card" href="estimation.html" id="card-estimation" onclick="return gateCard(event,'estimation.html')">
       <div class="card-icon">📊</div>
       <div class="card-label">Simulation</div>
       <h2 class="card-title">Estimation de son imposition optimisée</h2>
@@ -590,7 +590,7 @@
       <span class="card-arrow">Lancer l'estimation <span>→</span></span>
     </a>
 
-    <a class="card card-agent" href="agent-conseil.html">
+    <a class="card card-agent" href="agent-conseil.html" id="card-agent" onclick="return gateCard(event,'agent-conseil.html')">
       <div class="card-icon">🤖</div>
       <div class="card-label">Intelligence artificielle</div>
       <h2 class="card-title">Agent de conseil fiscal personnalisé</h2>
@@ -720,14 +720,59 @@
 
 <div class="cookie-banner" id="cookie-banner">
   <p class="cookie-text">Nous utilisons des cookies essentiels uniquement. <a href="mentions-legales.html#rgpd">En savoir plus</a>.</p>
-  <button class="cookie-btn cookie-decline" onclick="document.getElementById('cookie-banner').classList.add('hidden');localStorage.setItem('cookie','declined')">Refuser</button>
-  <button class="cookie-btn cookie-accept" onclick="document.getElementById('cookie-banner').classList.add('hidden');localStorage.setItem('cookie','accepted')">Accepter</button>
+  <button class="cookie-btn cookie-decline" onclick="cookieChoice('declined')">Refuser</button>
+  <button class="cookie-btn cookie-accept" onclick="cookieChoice('accepted')">Accepter</button>
+</div>
+
+<div id="signup-cta" style="
+  position:fixed;bottom:0;left:0;right:0;z-index:990;
+  background:linear-gradient(90deg,rgba(8,17,30,0.97),rgba(5,10,18,0.97));
+  border-top:1px solid rgba(110,154,181,0.18);
+  display:flex;align-items:center;justify-content:center;gap:1.25rem;
+  padding:.9rem 2rem;
+  transform:translateY(100%);transition:transform .45s cubic-bezier(.22,1,.36,1);
+  backdrop-filter:blur(12px);
+">
+  <span style="font-size:.85rem;color:#a2bfd4;font-weight:500;">🔓 Créez un compte gratuit pour accéder à l'agent IA et au simulateur</span>
+  <button onclick="GammaAuth.showModal(()=>{ document.getElementById('signup-cta').style.display='none'; })" style="
+    background:#6e9ab5;color:#050a12;border:none;border-radius:8px;
+    padding:.5rem 1.25rem;font-size:.82rem;font-weight:700;cursor:pointer;
+    white-space:nowrap;transition:background .2s;
+  " onmouseover="this.style.background='#a2bfd4'" onmouseout="this.style.background='#6e9ab5'">Créer un compte</button>
+  <button onclick="document.getElementById('signup-cta').style.transform='translateY(100%)';setTimeout(()=>document.getElementById('signup-cta').style.display='none',450)" style="
+    background:none;border:none;color:#6b7fa0;cursor:pointer;font-size:1.1rem;padding:.2rem .5rem;
+  ">✕</button>
 </div>
 
 <script>
 
 // Cookie banner
-if(localStorage.getItem('cookie')) document.getElementById('cookie-banner').classList.add('hidden');
+function cookieChoice(val) {
+  document.getElementById('cookie-banner').classList.add('hidden');
+  localStorage.setItem('cookie', val);
+  showSignupCta();
+}
+if(localStorage.getItem('cookie')) {
+  document.getElementById('cookie-banner').classList.add('hidden');
+  showSignupCta();
+}
+function showSignupCta() {
+  const cta = document.getElementById('signup-cta');
+  if (!cta) return;
+  // Only show if user is not logged in
+  try { if (localStorage.getItem('gamma_user')) { cta.style.display='none'; return; } } catch(e) {}
+  setTimeout(() => { cta.style.transform = 'translateY(0)'; }, 600);
+}
+
+// Card auth gate
+function gateCard(e, url) {
+  try { if (localStorage.getItem('gamma_user')) return true; } catch(err) {}
+  e.preventDefault();
+  if (typeof GammaAuth !== 'undefined') {
+    GammaAuth.showModal(() => { window.location.href = url; });
+  }
+  return false;
+}
 
 // Particle canvas
 const canvas = document.getElementById('c');
@@ -1056,5 +1101,6 @@ document.querySelectorAll('.pillar').forEach(el => io.observe(el));
   obs.observe(document.getElementById('demo-section'));
 })();
 </script>
+<script src="auth.js"></script>
 </body>
 </html>

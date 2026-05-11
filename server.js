@@ -1,18 +1,71 @@
 require('dotenv').config({ path: require('path').join(__dirname, '.env'), override: true });
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const Anthropic = require('@anthropic-ai/sdk');
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
+const JWT_SECRET = process.env.JWT_SECRET || 'gamma-ia-jwt-secret-2026';
+const USERS_FILE = path.join(__dirname, 'users.json');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'taxoptim')));
+
+function getUsers() {
+  if (!fs.existsSync(USERS_FILE)) return [];
+  try { return JSON.parse(fs.readFileSync(USERS_FILE, 'utf-8')); } catch { return []; }
+}
+function saveUsers(u) { fs.writeFileSync(USERS_FILE, JSON.stringify(u, null, 2)); }
+
+/* ── Auth endpoints ── */
+app.post('/api/auth/register', async (req, res) => {
+  const { email, password, name } = req.body;
+  if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });
+  if (password.length < 8) return res.status(400).json({ error: 'Mot de passe trop court (8 caractères min.)' });
+  const users = getUsers();
+  if (users.find(u => u.email.toLowerCase() === email.toLowerCase()))
+    return res.status(409).json({ error: 'Un compte existe déjà avec cet email' });
+  const hash = await bcrypt.hash(password, 12);
+  const user = { id: Date.now().toString(), email: email.toLowerCase(), name: name || '', hash, createdAt: new Date().toISOString() };
+  users.push(user);
+  saveUsers(users);
+  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+  res.json({ token, email: user.email, name: user.name });
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });
+  const users = getUsers();
+  const user = users.find(u => u.email === email.toLowerCase());
+  if (!user) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+  const ok = await bcrypt.compare(password, user.hash);
+  if (!ok) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+  res.json({ token, email: user.email, name: user.name });
+});
+
+app.post('/api/auth/google', async (req, res) => {
+  const { email, name, googleId } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email manquant' });
+  const users = getUsers();
+  let user = users.find(u => u.email === email.toLowerCase());
+  if (!user) {
+    user = { id: googleId || Date.now().toString(), email: email.toLowerCase(), name: name || '', hash: '', provider: 'google', createdAt: new Date().toISOString() };
+    users.push(user);
+    saveUsers(users);
+  }
+  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+  res.json({ token, email: user.email, name: user.name });
+});
+
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
 
 /* ── Upload endpoint ── */
 app.post('/api/upload', upload.single('file'), async (req, res) => {
