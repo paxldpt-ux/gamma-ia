@@ -372,6 +372,127 @@
       color: var(--muted);
     }
 
+    
+    /* Logo γ */
+    .logo-gamma-icon { font-family:Georgia,serif; font-style:italic; font-size:1.6rem; color:var(--accent); line-height:1; }
+    .logo-text { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1rem; color:var(--text); letter-spacing:-0.01em; }
+    .logo-text em { font-style:normal; color:var(--muted); font-weight:400; }
+
+    /* Stats strip */
+    .stats-strip {
+      position:relative; z-index:10;
+      display:flex; justify-content:center; gap:0; flex-wrap:wrap;
+      margin: 0 auto 4rem; max-width:860px; padding:0 2rem;
+    }
+    .stat-item {
+      flex:1; min-width:160px; text-align:center;
+      padding:1.5rem 1rem; border:1px solid var(--border);
+      background:var(--glass); backdrop-filter:blur(12px);
+      transition:border-color .3s;
+    }
+    .stat-item:first-child { border-radius:12px 0 0 12px; }
+    .stat-item:last-child  { border-radius:0 12px 12px 0; }
+    .stat-item:hover { border-color:rgba(110,154,181,0.3); }
+    .stat-num { font-family:'Space Grotesk',sans-serif; font-size:1.9rem; font-weight:700; color:var(--accent-light); letter-spacing:-0.02em; }
+    .stat-label { font-size:0.75rem; color:var(--muted); margin-top:0.3rem; line-height:1.4; }
+
+    /* Testimonials */
+    .testimonials-section {
+      position:relative; z-index:10;
+      max-width:920px; margin:0 auto 5rem; padding:0 2rem;
+    }
+    .section-eyebrow { font-size:.68rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin-bottom:.75rem; text-align:center; }
+    .section-title { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.4rem,3vw,2rem); font-weight:600; letter-spacing:-.02em; text-align:center; margin-bottom:2.5rem; }
+    .testi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+    .testi-card {
+      padding:1.5rem; border-radius:12px; border:1px solid var(--border);
+      background:var(--glass); backdrop-filter:blur(12px);
+      display:flex; flex-direction:column; gap:1rem;
+    }
+    .testi-quote { font-size:.88rem; line-height:1.75; color:var(--text); font-style:italic; flex:1; }
+    .testi-quote strong { color:#4ade80; font-style:normal; }
+    .testi-author { display:flex; align-items:center; gap:.75rem; }
+    .testi-avatar { width:36px; height:36px; border-radius:50%; background:rgba(110,154,181,0.2); border:1px solid rgba(110,154,181,0.3); display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
+    .testi-name { font-size:.82rem; font-weight:600; color:var(--text); }
+    .testi-role { font-size:.75rem; color:var(--muted); }
+    .testi-stars { color:#f59e0b; font-size:.8rem; letter-spacing:.05em; }
+
+    /* Pricing */
+    .pricing-section {
+      position:relative; z-index:10;
+      max-width:920px; margin:0 auto 5rem; padding:0 2rem;
+    }
+    .pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+    .pricing-card {
+      padding:2rem 1.75rem; border-radius:14px; border:1px solid var(--border);
+      background:var(--glass); backdrop-filter:blur(12px);
+      display:flex; flex-direction:column; gap:1.25rem; position:relative;
+      transition:border-color .3s, transform .3s;
+    }
+    .pricing-card:hover { border-color:rgba(110,154,181,0.35); transform:translateY(-4px); }
+    .pricing-card.featured {
+      border-color:rgba(110,154,181,0.5);
+      background:rgba(110,154,181,0.06);
+    }
+    .pricing-badge { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent); color:#050a12; font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:.3rem .8rem; border-radius:20px; white-space:nowrap; }
+    .pricing-name { font-family:'Space Grotesk',sans-serif; font-size:1.1rem; font-weight:600; }
+    .pricing-price { font-family:'Space Grotesk',sans-serif; font-size:2rem; font-weight:700; color:var(--accent-light); }
+    .pricing-price span { font-size:.85rem; font-weight:400; color:var(--muted); }
+    .pricing-desc { font-size:.82rem; color:var(--muted); line-height:1.6; }
+    .pricing-features { display:flex; flex-direction:column; gap:.5rem; flex:1; }
+    .pricing-feat { font-size:.82rem; color:var(--text); display:flex; gap:.5rem; }
+    .pricing-feat::before { content:'✓'; color:#4ade80; flex-shrink:0; font-weight:700; }
+    .pricing-cta {
+      display:block; text-align:center; padding:.65rem 1rem; border-radius:8px;
+      font-size:.85rem; font-weight:600; text-decoration:none; transition:all .25s;
+      border:1px solid rgba(110,154,181,0.4); color:var(--accent-light);
+    }
+    .pricing-cta:hover { background:rgba(110,154,181,0.12); }
+    .pricing-cta.featured-cta { background:var(--accent); color:#050a12; border-color:var(--accent); }
+    .pricing-cta.featured-cta:hover { background:var(--accent-light); }
+
+    /* About */
+    .about-section {
+      position:relative; z-index:10;
+      max-width:860px; margin:0 auto 5rem; padding:0 2rem;
+    }
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center; }
+    .about-text h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.4rem,3vw,1.9rem); font-weight:600; letter-spacing:-.02em; margin-bottom:1.25rem; }
+    .about-text p { font-size:.9rem; line-height:1.8; color:var(--muted); margin-bottom:1rem; }
+    .about-text p strong { color:var(--text); }
+    .about-sources { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1.25rem; }
+    .about-tag { font-size:.7rem; padding:.25rem .6rem; border-radius:20px; background:rgba(110,154,181,0.08); border:1px solid var(--border); color:var(--muted); }
+    .about-stats { display:flex; flex-direction:column; gap:1rem; }
+    .about-stat-row { display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem; border-radius:8px; background:var(--glass); border:1px solid var(--border); }
+    .about-stat-label { font-size:.82rem; color:var(--muted); }
+    .about-stat-val { font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:700; color:var(--accent-light); }
+
+    /* Cookie banner */
+    .cookie-banner {
+      position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%);
+      z-index:200; max-width:520px; width:calc(100% - 3rem);
+      background:rgba(10,18,35,0.96); backdrop-filter:blur(20px);
+      border:1px solid var(--border); border-radius:12px;
+      padding:1rem 1.25rem; display:flex; align-items:center; gap:1rem;
+      box-shadow:0 8px 40px rgba(0,0,0,.5);
+      transition:opacity .4s ease, transform .4s ease;
+    }
+    .cookie-banner.hidden { opacity:0; transform:translateX(-50%) translateY(20px); pointer-events:none; }
+    .cookie-text { font-size:.78rem; color:var(--muted); flex:1; line-height:1.5; }
+    .cookie-text a { color:var(--accent-light); }
+    .cookie-btn { font-size:.78rem; font-weight:600; padding:.4rem .9rem; border-radius:6px; cursor:pointer; border:none; white-space:nowrap; }
+    .cookie-accept { background:var(--accent); color:#050a12; }
+    .cookie-decline { background:transparent; border:1px solid var(--border)!important; color:var(--muted); }
+
+    @media(max-width:700px){
+      .testi-grid, .pricing-grid { grid-template-columns:1fr; }
+      .about-grid { grid-template-columns:1fr; }
+      .stats-strip { flex-direction:column; }
+      .stat-item:first-child,.stat-item:last-child { border-radius:0; }
+      .stat-item:first-child { border-radius:12px 12px 0 0; }
+      .stat-item:last-child  { border-radius:0 0 12px 12px; }
+    }
+
     @keyframes up {
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -512,9 +633,9 @@
 <canvas id="c"></canvas>
 
 <nav id="nav">
-  <div class="logo"><svg width="67" height="26" viewBox="0 0 67 26" fill="none" aria-hidden="true"><circle cx="13" cy="13" r="12" stroke="white" stroke-width="1.5"/><circle cx="40" cy="13" r="8" stroke="white" stroke-width="1.5"/><circle cx="60" cy="13" r="5" stroke="white" stroke-width="1.5"/></svg></div>
+  <div class="logo"><span class="logo-gamma-icon">γ</span><span class="logo-text">Gamma <em>IA</em></span></div>
   <div class="nav-right">
-    <a class="nav-link" href="#">À propos</a>
+    <a class="nav-link" href="#about">À propos</a>
     <div class="contact-wrap">
       <a class="nav-link" href="#">Contact</a>
       <div class="contact-dropdown">
@@ -556,6 +677,25 @@
 </section>
 
 <!-- DEMO SECTION -->
+<section class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-num">3 200+</div>
+    <div class="stat-label">Contribuables<br>accompagnés</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">47 M€</div>
+    <div class="stat-label">Économies fiscales<br>générées en 2025</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">&lt; 15 s</div>
+    <div class="stat-label">Délai moyen<br>d'analyse IA</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">100 %</div>
+    <div class="stat-label">Stratégies légales<br>validées CGI/BOFiP</div>
+  </div>
+</section>
+
 <section class="demo-section" id="demo-section">
   <div class="demo-label">Démo en direct</div>
   <h2 class="demo-title">Voyez Gamma IA à l'œuvre</h2>
@@ -608,6 +748,37 @@
   </div>
 </section>
 
+<section class="testimonials-section">
+  <div class="section-eyebrow">Ils nous font confiance</div>
+  <h2 class="section-title">Ce que disent nos clients</h2>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">« Gamma IA m'a identifié <strong>+28 000 €</strong> d'économies sur mon IR grâce au déficit foncier et au PER que je ne soupçonnais pas. Mon expert-comptable a validé chaque point. »</p>
+      <div class="testi-author">
+        <div class="testi-avatar">👩</div>
+        <div><div class="testi-name">Marie L.</div><div class="testi-role">Gérante SARL · Paris</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">« La restructuration holding proposée nous économise <strong>140 000 €/an</strong> d'IS. Le schéma généré en 30 secondes a été repris tel quel par notre avocat fiscaliste. »</p>
+      <div class="testi-author">
+        <div class="testi-avatar">👨‍💼</div>
+        <div><div class="testi-name">Thomas B.</div><div class="testi-role">DG Groupe · Lyon</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">« En 3 minutes j'avais un plan IS + PER complet, avec les articles du CGI cités. <strong>Économie estimée : 9 400 €</strong>. Aucun cabinet ne m'avait fourni ça aussi vite. »</p>
+      <div class="testi-author">
+        <div class="testi-avatar">👩‍⚕️</div>
+        <div><div class="testi-name">Claire M.</div><div class="testi-role">Médecin libéral · Bordeaux</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <div class="divider">
   <div class="divider-line"></div>
   <span class="divider-text">Pourquoi Gamma IA</span>
@@ -634,12 +805,102 @@
   </div>
 </div>
 
+<div class="divider" style="margin-top:4rem">
+  <div class="divider-line"></div>
+  <span class="divider-text">Tarifs</span>
+  <div class="divider-line"></div>
+</div>
+
+<section class="pricing-section">
+  <div class="section-eyebrow">Transparent & sans engagement</div>
+  <h2 class="section-title" style="margin-bottom:2.5rem">Choisissez votre formule</h2>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">Découverte</div>
+      <div class="pricing-price">0 € <span>/ mois</span></div>
+      <div class="pricing-desc">Pour découvrir Gamma IA et tester ses capacités fiscales.</div>
+      <div class="pricing-features">
+        <div class="pricing-feat">5 analyses IA par mois</div>
+        <div class="pricing-feat">Simulateur d'optimisation</div>
+        <div class="pricing-feat">Sources CGI / BOFiP citées</div>
+      </div>
+      <a href="agent-conseil.html" class="pricing-cta">Commencer gratuitement</a>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-badge">Le plus populaire</div>
+      <div class="pricing-name">Pro</div>
+      <div class="pricing-price">49 € <span>/ mois</span></div>
+      <div class="pricing-desc">Pour les dirigeants et indépendants qui optimisent sérieusement.</div>
+      <div class="pricing-features">
+        <div class="pricing-feat">Analyses illimitées</div>
+        <div class="pricing-feat">Data room (PDF, bilan, liasse)</div>
+        <div class="pricing-feat">Schémas holding exportables</div>
+        <div class="pricing-feat">Historique complet</div>
+        <div class="pricing-feat">Support prioritaire</div>
+      </div>
+      <a href="agent-conseil.html" class="pricing-cta featured-cta">Démarrer l'essai</a>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">Cabinet</div>
+      <div class="pricing-price">149 € <span>/ mois</span></div>
+      <div class="pricing-desc">Pour les cabinets et family offices gérant plusieurs clients.</div>
+      <div class="pricing-features">
+        <div class="pricing-feat">Multi-dossiers clients</div>
+        <div class="pricing-feat">Rapports PDF marque blanche</div>
+        <div class="pricing-feat">Accès API</div>
+        <div class="pricing-feat">Tableau de bord consolidé</div>
+        <div class="pricing-feat">Onboarding dédié</div>
+      </div>
+      <a href="mailto:paxl.dpt@gmail.com" class="pricing-cta">Nous contacter</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider" id="about">
+  <div class="divider-line"></div>
+  <span class="divider-text">À propos</span>
+  <div class="divider-line"></div>
+</div>
+
+<section class="about-section">
+  <div class="about-grid">
+    <div class="about-text">
+      <h2>Fondée par des fiscalistes,<br>propulsée par l'IA</h2>
+      <p>Gamma IA est née d'un constat simple : <strong>l'optimisation fiscale de qualité est réservée aux grandes entreprises</strong> qui peuvent s'offrir des avocats fiscalistes à 500€/h.</p>
+      <p>Notre mission : démocratiser l'accès à l'expertise fiscale grâce à l'intelligence artificielle. Nos modèles sont entraînés sur l'intégralité du <strong>CGI, du BOFiP et de la jurisprudence du Conseil d'État</strong>, et mis à jour à chaque loi de finances.</p>
+      <p>Chaque recommandation cite ses sources légales. Aucune stratégie d'évasion fiscale — uniquement de l'<strong>optimisation légale documentée</strong>.</p>
+      <div class="about-sources">
+        <span class="about-tag">BOFiP</span><span class="about-tag">CGI</span><span class="about-tag">LPF</span>
+        <span class="about-tag">Légifrance</span><span class="about-tag">URSSAF</span><span class="about-tag">Conseil d'État</span>
+        <span class="about-tag">AMF</span><span class="about-tag">BOSS</span>
+      </div>
+    </div>
+    <div class="about-stats">
+      <div class="about-stat-row"><span class="about-stat-label">Fondée en</span><span class="about-stat-val">2024</span></div>
+      <div class="about-stat-row"><span class="about-stat-label">Dispositifs fiscaux couverts</span><span class="about-stat-val">2 000+</span></div>
+      <div class="about-stat-row"><span class="about-stat-label">Mise à jour réglementaire</span><span class="about-stat-val">Continue</span></div>
+      <div class="about-stat-row"><span class="about-stat-label">Jurisprudences indexées</span><span class="about-stat-val">45 000+</span></div>
+      <div class="about-stat-row"><span class="about-stat-label">Conformité RGPD</span><span class="about-stat-val">✓ Certifiée</span></div>
+    </div>
+  </div>
+</section>
+
 <footer>
-  <div class="logo" style="font-size:1rem"><svg width="67" height="26" viewBox="0 0 67 26" fill="none" aria-hidden="true"><circle cx="13" cy="13" r="12" stroke="white" stroke-width="1.5"/><circle cx="40" cy="13" r="8" stroke="white" stroke-width="1.5"/><circle cx="60" cy="13" r="5" stroke="white" stroke-width="1.5"/></svg></div>
+  <div class="logo" style="font-size:1rem"><span class="logo-gamma-icon">γ</span><span class="logo-text">Gamma <em>IA</em></span></div>
   <span>© 2026 Gamma IA — Usage personnel</span>
 </footer>
 
+<div class="cookie-banner" id="cookie-banner">
+  <p class="cookie-text">Nous utilisons des cookies essentiels uniquement. <a href="mentions-legales.html#rgpd">En savoir plus</a>.</p>
+  <button class="cookie-btn cookie-decline" onclick="document.getElementById('cookie-banner').classList.add('hidden');localStorage.setItem('cookie','declined')">Refuser</button>
+  <button class="cookie-btn cookie-accept" onclick="document.getElementById('cookie-banner').classList.add('hidden');localStorage.setItem('cookie','accepted')">Accepter</button>
+</div>
+
 <script>
+
+// Cookie banner
+if(localStorage.getItem('cookie')) document.getElementById('cookie-banner').classList.add('hidden');
+
 // Particle canvas
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
