@@ -380,39 +380,6 @@
 
 
 
-    /* Pricing */
-    .pricing-section {
-      position:relative; z-index:10;
-      max-width:920px; margin:0 auto 5rem; padding:0 2rem;
-    }
-    .pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
-    .pricing-card {
-      padding:2rem 1.75rem; border-radius:14px; border:1px solid var(--border);
-      background:var(--glass); backdrop-filter:blur(12px);
-      display:flex; flex-direction:column; gap:1.25rem; position:relative;
-      transition:border-color .3s, transform .3s;
-    }
-    .pricing-card:hover { border-color:rgba(110,154,181,0.35); transform:translateY(-4px); }
-    .pricing-card.featured {
-      border-color:rgba(110,154,181,0.5);
-      background:rgba(110,154,181,0.06);
-    }
-    .pricing-badge { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent); color:#050a12; font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:.3rem .8rem; border-radius:20px; white-space:nowrap; }
-    .pricing-name { font-family:'Space Grotesk',sans-serif; font-size:1.1rem; font-weight:600; }
-    .pricing-price { font-family:'Space Grotesk',sans-serif; font-size:2rem; font-weight:700; color:var(--accent-light); }
-    .pricing-price span { font-size:.85rem; font-weight:400; color:var(--muted); }
-    .pricing-desc { font-size:.82rem; color:var(--muted); line-height:1.6; }
-    .pricing-features { display:flex; flex-direction:column; gap:.5rem; flex:1; }
-    .pricing-feat { font-size:.82rem; color:var(--text); display:flex; gap:.5rem; }
-    .pricing-feat::before { content:'✓'; color:#4ade80; flex-shrink:0; font-weight:700; }
-    .pricing-cta {
-      display:block; text-align:center; padding:.65rem 1rem; border-radius:8px;
-      font-size:.85rem; font-weight:600; text-decoration:none; transition:all .25s;
-      border:1px solid rgba(110,154,181,0.4); color:var(--accent-light);
-    }
-    .pricing-cta:hover { background:rgba(110,154,181,0.12); }
-    .pricing-cta.featured-cta { background:var(--accent); color:#050a12; border-color:var(--accent); }
-    .pricing-cta.featured-cta:hover { background:var(--accent-light); }
 
     /* About */
     .about-section {
@@ -448,7 +415,7 @@
     .cookie-decline { background:transparent; border:1px solid var(--border)!important; color:var(--muted); }
 
     @media(max-width:700px){
-      .pricing-grid { grid-template-columns:1fr; }
+
       .about-grid { grid-template-columns:1fr; }
     }
 
@@ -716,56 +683,6 @@
   </div>
 </div>
 
-<div class="divider" style="margin-top:4rem">
-  <div class="divider-line"></div>
-  <span class="divider-text">Tarifs</span>
-  <div class="divider-line"></div>
-</div>
-
-<section class="pricing-section">
-  <div class="section-eyebrow">Transparent & sans engagement</div>
-  <h2 class="section-title" style="margin-bottom:2.5rem">Choisissez votre formule</h2>
-  <div class="pricing-grid">
-    <div class="pricing-card">
-      <div class="pricing-name">Découverte</div>
-      <div class="pricing-price">0 € <span>/ mois</span></div>
-      <div class="pricing-desc">Pour découvrir Gamma IA et tester ses capacités fiscales.</div>
-      <div class="pricing-features">
-        <div class="pricing-feat">5 analyses IA par mois</div>
-        <div class="pricing-feat">Simulateur d'optimisation</div>
-        <div class="pricing-feat">Sources CGI / BOFiP citées</div>
-      </div>
-      <a href="agent-conseil.html" class="pricing-cta">Commencer gratuitement</a>
-    </div>
-    <div class="pricing-card featured">
-      <div class="pricing-badge">Le plus populaire</div>
-      <div class="pricing-name">Pro</div>
-      <div class="pricing-price">49 € <span>/ mois</span></div>
-      <div class="pricing-desc">Pour les dirigeants et indépendants qui optimisent sérieusement.</div>
-      <div class="pricing-features">
-        <div class="pricing-feat">Analyses illimitées</div>
-        <div class="pricing-feat">Data room (PDF, bilan, liasse)</div>
-        <div class="pricing-feat">Schémas holding exportables</div>
-        <div class="pricing-feat">Historique complet</div>
-        <div class="pricing-feat">Support prioritaire</div>
-      </div>
-      <a href="agent-conseil.html" class="pricing-cta featured-cta">Démarrer l'essai</a>
-    </div>
-    <div class="pricing-card">
-      <div class="pricing-name">Cabinet</div>
-      <div class="pricing-price">149 € <span>/ mois</span></div>
-      <div class="pricing-desc">Pour les cabinets et family offices gérant plusieurs clients.</div>
-      <div class="pricing-features">
-        <div class="pricing-feat">Multi-dossiers clients</div>
-        <div class="pricing-feat">Rapports PDF marque blanche</div>
-        <div class="pricing-feat">Accès API</div>
-        <div class="pricing-feat">Tableau de bord consolidé</div>
-        <div class="pricing-feat">Onboarding dédié</div>
-      </div>
-      <a href="mailto:paxl.dpt@gmail.com" class="pricing-cta">Nous contacter</a>
-    </div>
-  </div>
-</section>
 
 <div class="divider" id="about">
   <div class="divider-line"></div>
