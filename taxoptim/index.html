@@ -378,23 +378,6 @@
     .logo-text { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1rem; color:var(--text); letter-spacing:-0.01em; }
     .logo-text em { font-style:normal; color:var(--muted); font-weight:400; }
 
-    /* Stats strip */
-    .stats-strip {
-      position:relative; z-index:10;
-      display:flex; justify-content:center; gap:0; flex-wrap:wrap;
-      margin: 0 auto 4rem; max-width:860px; padding:0 2rem;
-    }
-    .stat-item {
-      flex:1; min-width:160px; text-align:center;
-      padding:1.5rem 1rem; border:1px solid var(--border);
-      background:var(--glass); backdrop-filter:blur(12px);
-      transition:border-color .3s;
-    }
-    .stat-item:first-child { border-radius:12px 0 0 12px; }
-    .stat-item:last-child  { border-radius:0 12px 12px 0; }
-    .stat-item:hover { border-color:rgba(110,154,181,0.3); }
-    .stat-num { font-family:'Space Grotesk',sans-serif; font-size:1.9rem; font-weight:700; color:var(--accent-light); letter-spacing:-0.02em; }
-    .stat-label { font-size:0.75rem; color:var(--muted); margin-top:0.3rem; line-height:1.4; }
 
     /* Testimonials */
     .testimonials-section {
@@ -487,10 +470,6 @@
     @media(max-width:700px){
       .testi-grid, .pricing-grid { grid-template-columns:1fr; }
       .about-grid { grid-template-columns:1fr; }
-      .stats-strip { flex-direction:column; }
-      .stat-item:first-child,.stat-item:last-child { border-radius:0; }
-      .stat-item:first-child { border-radius:12px 12px 0 0; }
-      .stat-item:last-child  { border-radius:0 0 12px 12px; }
     }
 
     @keyframes up {
@@ -677,24 +656,6 @@
 </section>
 
 <!-- DEMO SECTION -->
-<section class="stats-strip">
-  <div class="stat-item">
-    <div class="stat-num">3 200+</div>
-    <div class="stat-label">Contribuables<br>accompagnés</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">47 M€</div>
-    <div class="stat-label">Économies fiscales<br>générées en 2025</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">&lt; 15 s</div>
-    <div class="stat-label">Délai moyen<br>d'analyse IA</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">100 %</div>
-    <div class="stat-label">Stratégies légales<br>validées CGI/BOFiP</div>
-  </div>
-</section>
 
 <section class="demo-section" id="demo-section">
   <div class="demo-label">Démo en direct</div>
