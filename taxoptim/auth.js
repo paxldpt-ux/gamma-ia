@@ -1,6 +1,5 @@
 /* ── Gamma IA Auth ── */
 const GammaAuth = {
-  GOOGLE_CLIENT_ID: '', // Remplacer par votre Google OAuth Client ID
 
   getUser() {
     try { return JSON.parse(localStorage.getItem('gamma_user')); } catch { return null; }
@@ -22,7 +21,6 @@ const GammaAuth = {
     document.body.appendChild(el);
     requestAnimationFrame(() => { el.style.opacity = '1'; el.querySelector('.auth-card').style.transform = 'translateY(0)'; });
     this._bindModal(el, onSuccess);
-    if (this.GOOGLE_CLIENT_ID) this._initGoogle(el, onSuccess);
   },
 
   _buildModal() {
@@ -284,36 +282,12 @@ const GammaAuth = {
   },
 
   _googleSignIn(el, onSuccess, close) {
-    if (!this.GOOGLE_CLIENT_ID) {
-      this._showError(el, 'Google Sign In non configuré (Client ID manquant). Utilisez email/mot de passe.');
-      return;
-    }
-    if (typeof google === 'undefined') { this._showError(el, 'Connexion Google indisponible.'); return; }
-    google.accounts.id.initialize({
-      client_id: this.GOOGLE_CLIENT_ID,
-      callback: async (resp) => {
-        try {
-          const payload = JSON.parse(atob(resp.credential.split('.')[1]));
-          const r = await fetch('/api/auth/google', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: payload.email, name: payload.name, googleId: payload.sub })
-          });
-          const data = await r.json();
-          if (!r.ok) throw new Error(data.error);
-          this.setUser({ email: data.email, name: data.name, token: data.token });
-          close();
-          onSuccess && onSuccess(this.getUser());
-        } catch(e) { this._showError(el, e.message); }
-      }
-    });
-    google.accounts.id.prompt();
+    // Store current page so auth-callback.html can redirect back
+    try { sessionStorage.setItem('gamma_auth_redirect', window.location.pathname + window.location.search); } catch(e) {}
+    window.location.href = '/api/auth/google/url';
   },
 
-  _initGoogle(el) {
-    if (!this.GOOGLE_CLIENT_ID || typeof google === 'undefined') return;
-    // GSI already initialized on demand in _googleSignIn
-  },
+  _initGoogle() {},
 
   _pwScore(pw) {
     let s = 0;

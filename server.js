@@ -64,6 +64,66 @@ app.post('/api/auth/google', async (req, res) => {
   res.json({ token, email: user.email, name: user.name });
 });
 
+const GOOGLE_CLIENT_ID     = process.env.GOOGLE_CLIENT_ID     || '';
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
+const APP_URL              = process.env.APP_URL              || 'http://localhost:3000';
+
+/* ── Google OAuth endpoints ── */
+app.get('/api/auth/google/url', (req, res) => {
+  if (!GOOGLE_CLIENT_ID) return res.redirect('/?auth_error=no_google_config');
+  const params = new URLSearchParams({
+    client_id:     GOOGLE_CLIENT_ID,
+    redirect_uri:  `${APP_URL}/api/auth/google/callback`,
+    response_type: 'code',
+    scope:         'email profile',
+    access_type:   'offline',
+    prompt:        'select_account',
+  });
+  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
+});
+
+app.get('/api/auth/google/callback', async (req, res) => {
+  const { code, error } = req.query;
+  if (error || !code) return res.redirect('/?auth_error=google_denied');
+  try {
+    // Exchange code → access token
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id:     GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        redirect_uri:  `${APP_URL}/api/auth/google/callback`,
+        grant_type:    'authorization_code',
+      }),
+    });
+    const tokenData = await tokenRes.json();
+    if (!tokenData.access_token) throw new Error('No access token');
+
+    // Get user info
+    const userRes  = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+    const gUser = await userRes.json();
+    if (!gUser.email) throw new Error('No email from Google');
+
+    // Find or create user
+    const users = getUsers();
+    let user = users.find(u => u.email === gUser.email.toLowerCase());
+    if (!user) {
+      user = { id: gUser.sub || Date.now().toString(), email: gUser.email.toLowerCase(), name: gUser.name || '', hash: '', provider: 'google', createdAt: new Date().toISOString() };
+      users.push(user);
+      saveUsers(users);
+    }
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+    res.redirect(`/auth-callback.html?token=${token}&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.name || '')}`);
+  } catch (err) {
+    console.error('Google OAuth error:', err.message);
+    res.redirect('/?auth_error=google_failed');
+  }
+});
+
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
 
