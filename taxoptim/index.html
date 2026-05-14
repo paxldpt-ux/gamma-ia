@@ -965,6 +965,34 @@ function showSignupCta() {
   setTimeout(() => { cta.style.transform = 'translateY(0)'; }, 600);
 }
 
+// Auth error display (after Google OAuth redirect)
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const authErr = params.get('auth_error');
+  if (authErr) {
+    const msgs = {
+      no_google_config: 'Google OAuth non configuré côté serveur.',
+      google_denied: 'Connexion Google annulée.',
+      google_failed: 'Erreur lors de la connexion Google. Réessayez.',
+    };
+    const msg = msgs[authErr] || `Erreur d'authentification : ${authErr}`;
+    // Ouvre la modale avec le message d'erreur après chargement
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        if (typeof GammaAuth !== 'undefined') {
+          GammaAuth.showModal(() => {});
+          setTimeout(() => {
+            const errEl = document.getElementById('auth-error');
+            if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
+          }, 100);
+        }
+      }, 500);
+    });
+    // Nettoie l'URL sans recharger
+    history.replaceState({}, '', window.location.pathname);
+  }
+})();
+
 // Card auth gate
 function gateCard(e, url) {
   try { if (localStorage.getItem('gamma_user')) return true; } catch(err) {}
