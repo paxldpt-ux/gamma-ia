@@ -720,6 +720,11 @@
               <input id="charges-immo" class="field-input" type="number" placeholder="ex : 4 500" oninput="compute()" />
             </div>
           </div>
+          <div class="field-group">
+            <label class="field-label">Prix d'acquisition du bien (€) <span style="font-weight:400;font-style:italic">(optionnel — affine le calcul LMNP)</span></label>
+            <input id="prix-acquisition" class="field-input" type="number" placeholder="ex : 220 000" oninput="compute()" />
+            <p class="field-hint">Utilisé pour estimer l'amortissement annuel en régime LMNP réel. Si non renseigné : estimation à 15× les loyers annuels.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1056,19 +1061,12 @@ function chip(groupId, text) {
   return Array.from(document.querySelectorAll('#' + groupId + ' .chip.active')).some(c => c.textContent.trim().includes(text));
 }
 
-// Barème IR 2024 par tranche sur le quotient familial
+// ── Barème IR 2024 — calcul par tranches sur le quotient familial ──
 function calcIR(revenu, parts) {
+  if (revenu <= 0 || parts <= 0) return 0;
   const q = revenu / parts;
-  let ir = 0;
-  if (q > 11497)  ir += Math.min(q, 29315)  - 11497;
-  if (q > 29315)  ir += (Math.min(q, 83823)  - 29315) * (0.30 / 0.11);
-  if (q > 83823)  ir += (Math.min(q, 180294) - 83823)  * (0.41 / 0.11);
-  if (q > 180294) ir += (q - 180294) * (0.45 / 0.11);
-
-  // recalcul direct par tranche
-  let t = 0;
   const tranches = [[11497,0],[29315,0.11],[83823,0.30],[180294,0.41],[Infinity,0.45]];
-  let prev = 0;
+  let t = 0, prev = 0;
   for (const [seuil, taux] of tranches) {
     if (q <= prev) break;
     t += (Math.min(q, seuil) - prev) * taux;
@@ -1077,26 +1075,68 @@ function calcIR(revenu, parts) {
   return Math.max(0, t * parts);
 }
 
+// ── Décote 2024 (Art. 197 CGI) ──
+// Réduit l'IR pour les foyers à faibles revenus.
+// Célibataire : décote = 883 − (3/4 × IR) si IR < 1 177 €
+// Couple/PACS : décote = 1 444 − (3/4 × IR) si IR < 1 925 €
+function applyDecote(ir, married) {
+  const D = married ? 1444 : 883;
+  const decote = Math.max(0, D - 0.75 * ir);
+  return Math.max(0, ir - decote);
+}
+
+// ── Plafonnement du quotient familial 2024 ──
+// L'avantage des demi-parts enfants est plafonné à 1 759 € par demi-part.
+// Exception case T (parent isolé, 1er enfant) : avantage plafonné à 4 149 €.
+// Puis on applique la décote sur l'IR plaffonné.
+function calcIRFinal(revenu, parts, married, parentIsole) {
+  if (revenu <= 0) return 0;
+  const partsBase = married ? 2 : 1;
+
+  if (parts <= partsBase) {
+    // Pas de demi-parts enfants — décote uniquement
+    return applyDecote(calcIR(revenu, parts), married);
+  }
+
+  const irAvecQF      = calcIR(revenu, parts);
+  const irSansEnfants = calcIR(revenu, partsBase);
+  const nbDemiParts   = (parts - partsBase) * 2; // nb de demi-parts liées aux enfants
+
+  let plafond;
+  if (parentIsole && nbDemiParts >= 2) {
+    // Case T : 1re part entière → plafond 4 149 €, demi-parts suivantes → 1 759 € chacune
+    plafond = 4149 + Math.max(0, nbDemiParts - 2) * 1759;
+  } else {
+    plafond = nbDemiParts * 1759;
+  }
+
+  const avantageQF  = Math.min(irSansEnfants - irAvecQF, plafond);
+  const irPlafonne  = Math.max(0, irSansEnfants - avantageQF);
+  return applyDecote(irPlafonne, married);
+}
+
+// ── Taux marginal d'imposition (TMI) ──
 function getTaux(revenu, parts) {
+  if (revenu <= 0 || parts <= 0) return { label: '0 %', rate: 0 };
   const q = revenu / parts;
-  if (q <= 11497)  return { label: '0 %',  rate: 0 };
+  if (q <= 11497)  return { label: '0 %',  rate: 0    };
   if (q <= 29315)  return { label: '11 %', rate: 0.11 };
   if (q <= 83823)  return { label: '30 %', rate: 0.30 };
   if (q <= 180294) return { label: '41 %', rate: 0.41 };
-  return { label: '45 %', rate: 0.45 };
+  return              { label: '45 %', rate: 0.45 };
 }
 
 function compute() {
-  const revenu    = val('rev-imposable');
-  const autresRev = val('autres-revenus');
-  const revLoc    = val('rev-locatifs');
-  const chargesLoc= val('charges-immo');
-  const perVers   = val('per-versements');
-  const plusVal   = val('plus-values');
-  const donsVal   = val('dons');
-  const domVal    = val('dom-emploi');
+  const revenu     = val('rev-imposable');
+  const autresRev  = val('autres-revenus');
+  const revLoc     = val('rev-locatifs');
+  const chargesLoc = val('charges-immo');
+  const prixAcquis = val('prix-acquisition');
+  const perVers    = val('per-versements');
+  const plusVal    = val('plus-values');
+  const donsVal    = val('dons');
+  const domVal     = val('dom-emploi');
 
-  // Réinitialiser si aucun revenu
   if (revenu <= 0) {
     ['savings-amount','tax-current','tax-after','tmi'].forEach(id => document.getElementById(id).textContent = '—');
     document.getElementById('confidence-tag').textContent = 'À compléter';
@@ -1104,97 +1144,218 @@ function compute() {
     return;
   }
 
-  // Parts fiscales
-  const selects = document.querySelectorAll('#s1 .field-select');
-  const married = selects[0]?.value.includes('Marié') || selects[0]?.value.includes('Pacsé');
-  const children = parseInt(selects[1]?.value) || 0;
+  // ── Parts fiscales ──
+  const selects     = document.querySelectorAll('#s1 .field-select');
+  const married     = selects[0]?.value.includes('Marié') || selects[0]?.value.includes('Pacsé');
+  const children    = parseInt(selects[1]?.value) || 0;
   const parentIsole = !married && children > 0;
-  let parts = married ? 2 : 1;
+  const partsBase   = married ? 2 : 1;
+  let parts = partsBase;
   if (children > 0) {
-    parts += parentIsole ? 1 : 0.5;   // 1er enfant : +1 si parent isolé, +0,5 si couple
-    if (children >= 2) parts += 0.5;  // 2ème enfant : +0,5
-    if (children >= 3) parts += (children - 2); // 3ème et au-delà : +1 par enfant
+    parts += parentIsole ? 1 : 0.5;
+    if (children >= 2) parts += 0.5;
+    if (children >= 3) parts += (children - 2);
   }
 
-  // Revenus fonciers nets imposables
-  const foncierNet = Math.max(0, revLoc - chargesLoc);
-  // PER : déduit du revenu imposable
-  const revApresPerBase = Math.max(0, revenu - perVers);
-  const revTotal = revApresPerBase + foncierNet + autresRev;
-
-  const { label: tmiLabel, rate: tmiRate } = getTaux(revTotal, parts);
-  const irBase   = calcIR(revenu + foncierNet + autresRev, parts);
-  const levers   = [];
-  let totalSavings = 0;
-
-  // ── PER individuel ──
-  if (perVers > 0) {
-    const perSaving = Math.round(perVers * tmiRate);
-    totalSavings += perSaving;
-    levers.push({ name: 'PER — déduction versements', save: `${fmt(perVers)} déduits du revenu imposable`, gain: fmt(perSaving), level: 'high' });
-  } else {
-    const maxPer = Math.min(Math.round(revenu * 0.10), 35194);
-    if (maxPer > 500 && tmiRate > 0) {
-      const potentiel = Math.round(maxPer * tmiRate);
-      levers.push({ name: 'PER — potentiel non utilisé', save: `Jusqu'à ${fmt(maxPer)} déductibles (plafond estimé)`, gain: `~${fmt(potentiel)} économisés`, level: 'high' });
-      totalSavings += potentiel;
+  // ── Revenus fonciers selon le régime ──
+  const hasLMNP = chip('chips-loc', 'LMNP');
+  let foncierNet = 0;
+  if (revLoc > 0) {
+    if (hasLMNP) {
+      // LMNP régime réel : amortissement bien (80 % valeur, 30 ans)
+      const valBien     = prixAcquis > 0 ? prixAcquis : revLoc * 15;
+      const amortAnnuel = (valBien * 0.80) / 30;
+      foncierNet = Math.max(0, revLoc - chargesLoc - amortAnnuel);
+    } else if (chargesLoc === 0 && revLoc <= 15000) {
+      // Micro-foncier (< 15 000 €, aucune charge saisie) : abattement forfaitaire 30 %
+      foncierNet = revLoc * 0.70;
+    } else {
+      // Régime réel foncier
+      foncierNet = Math.max(0, revLoc - chargesLoc);
     }
   }
 
-  // ── Revenus locatifs : passage LMNP ──
-  const hasLMNP = chip('chips-loc', 'LMNP');
-  const hasNue  = chip('chips-loc', 'nue');
+  // ── Base imposable de référence (sans optimisations) ──
+  const revBrut = revenu + foncierNet + autresRev;
+
+  // ── IR de référence (avec décote + plafond QF) ──
+  const irBrut = calcIRFinal(revBrut, parts, married, parentIsole);
+
+  // ── Taux marginal sur la base brute ──
+  const { label: tmiLabel, rate: tmiRate } = getTaux(revBrut, parts);
+
+  const levers = [];
+
+  // ════════════════════════════════════════════
+  // TYPE 1 — Déductions du revenu imposable
+  // L'IR est recalculé après toutes les déductions.
+  // ════════════════════════════════════════════
+  let deductionBase = 0;
+
+  // PER : plafond = max(10 % revenu pro, 4 527 €), min 35 194 €
+  const plafondPer = Math.min(Math.max(revenu * 0.10, 4527), 35194);
+  if (perVers > 0) {
+    const perEffectif = Math.min(perVers, plafondPer);
+    deductionBase += perEffectif;
+    const perSaving = Math.round(perEffectif * tmiRate);
+    levers.push({
+      name: 'PER — déduction versements',
+      save: `${fmt(perEffectif)} déduits (plafond : ${fmt(plafondPer)}, plancher 4 527 €)`,
+      gain: fmt(perSaving),
+      level: 'high'
+    });
+    if (perVers > plafondPer) {
+      levers.push({
+        name: '⚠️ Versements PER dépassent le plafond',
+        save: `${fmt(perVers - plafondPer)} excédentaires non déductibles cette année`,
+        gain: 'À vérifier',
+        level: 'mid'
+      });
+    }
+  } else if (plafondPer > 500 && tmiRate > 0) {
+    const potentiel = Math.round(plafondPer * tmiRate);
+    levers.push({
+      name: 'PER — potentiel non utilisé',
+      save: `Plafond disponible : ${fmt(plafondPer)} (10 % revenu pro, plancher 4 527 €)`,
+      gain: `~${fmt(potentiel)} d'économies possibles`,
+      level: 'high'
+    });
+  }
+
+  // LMNP : suggestion de passage avec calcul d'amortissement réel
   if (revLoc > 0 && !hasLMNP) {
-    const econLMNP = Math.round(foncierNet * tmiRate * 0.7); // amortissement couvre ~70% du résultat
-    levers.push({ name: 'Passage en LMNP', save: `Amortissement du bien : revenus quasi non imposés`, gain: econLMNP > 0 ? `~${fmt(econLMNP)}` : 'Significatif', level: 'high' });
-    totalSavings += econLMNP;
+    const foncierActuel = chargesLoc === 0 && revLoc <= 15000
+      ? revLoc * 0.70   // micro-foncier actuel
+      : Math.max(0, revLoc - chargesLoc);
+    if (foncierActuel > 0) {
+      const valBien       = prixAcquis > 0 ? prixAcquis : revLoc * 15;
+      const amortAnnuel   = (valBien * 0.80) / 30;
+      const foncierLMNP   = Math.max(0, revLoc - chargesLoc - amortAnnuel);
+      const deductionLMNP = Math.max(0, foncierActuel - foncierLMNP);
+      const econLMNP      = Math.round(deductionLMNP * tmiRate);
+      if (econLMNP > 0) {
+        levers.push({
+          name: 'Passage en LMNP — amortissement du bien',
+          save: prixAcquis > 0
+            ? `Amortissement : ${fmt(Math.round(amortAnnuel))}/an sur ${fmt(prixAcquis)} — revenus quasi non imposés`
+            : `Estimation sur valeur ≈ ${fmt(Math.round(valBien))} (saisir le prix d'acquisition pour affiner)`,
+          gain: `~${fmt(econLMNP)}/an`,
+          level: 'high'
+        });
+      }
+    }
   } else if (revLoc > 0 && hasLMNP) {
-    levers.push({ name: 'LMNP déjà actif ✓', save: 'Amortissement en cours — vérifier le régime réel', gain: 'Optimisé', level: 'low' });
+    levers.push({ name: 'LMNP actif ✓', save: 'Régime réel — vérifier la valorisation du bien et les composants amortissables', gain: 'Optimisé', level: 'low' });
   }
 
-  // ── Dons associations ──
+  // ── IR recalculé après déductions de base ──
+  const revApresDeductions = Math.max(0, revBrut - deductionBase);
+  const irApresDeductions  = calcIRFinal(revApresDeductions, parts, married, parentIsole);
+
+  // ════════════════════════════════════════════
+  // TYPE 2 — Réductions d'impôt (% du montant versé)
+  // Déduit directement de l'IR calculé, sans modifier la base.
+  // ════════════════════════════════════════════
+  let reductionImpot = 0;
+
   if (donsVal > 0) {
-    const donSaving = Math.round(Math.min(donsVal, revenu * 0.20) * 0.66);
-    totalSavings += donSaving;
-    levers.push({ name: 'Réduction dons (66 %)', save: `${fmt(donsVal)} de dons déclarés`, gain: fmt(donSaving), level: 'mid' });
+    const donEligible = Math.min(donsVal, revenu * 0.20);
+    const donSaving   = Math.round(donEligible * 0.66);
+    reductionImpot += donSaving;
+    levers.push({
+      name: 'Réduction dons (66 %)',
+      save: `${fmt(Math.round(donEligible))} éligibles — plafond 20 % du revenu imposable`,
+      gain: fmt(donSaving),
+      level: 'mid'
+    });
   } else {
-    levers.push({ name: 'Dons associations — non déclarés', save: 'Réduction d\'impôt de 66 % des sommes versées', gain: 'ex: 500 € → 330 € économisés', level: 'low' });
-    totalSavings += 330;
+    levers.push({
+      name: 'Dons associations — non déclarés',
+      save: 'Réduction d\'impôt de 66 % des sommes versées',
+      gain: 'ex : 500 € → 330 € de réduction',
+      level: 'low'
+    });
   }
 
-  // ── Emploi à domicile ──
+  // ════════════════════════════════════════════
+  // TYPE 3 — Crédits d'impôt (remboursables même si IR = 0)
+  // ════════════════════════════════════════════
+  let creditImpot = 0;
+
   if (domVal > 0) {
-    const domSaving = Math.round(Math.min(domVal, 12000) * 0.50);
-    totalSavings += domSaving;
-    levers.push({ name: 'Crédit impôt emploi à domicile (50 %)', save: `${fmt(domVal)} de dépenses déclarées`, gain: fmt(domSaving), level: 'mid' });
+    const domEligible = Math.min(domVal, 12000);
+    const domSaving   = Math.round(domEligible * 0.50);
+    creditImpot += domSaving;
+    levers.push({
+      name: 'Crédit impôt emploi à domicile (50 %)',
+      save: `${fmt(Math.round(domEligible))} déclarés — plafond 12 000 € (+ 1 500 € par enfant à charge)`,
+      gain: fmt(domSaving),
+      level: 'mid'
+    });
   } else {
-    levers.push({ name: 'Emploi à domicile — crédit 50 %', save: 'Garde enfants, ménage, jardinage… éligibles', gain: 'ex: 3 000 € → 1 500 € crédités', level: 'low' });
-    totalSavings += 750;
+    levers.push({
+      name: 'Emploi à domicile — crédit 50 %',
+      save: 'Garde enfants, ménage, jardinage… plafonné à 12 000 €',
+      gain: 'ex : 3 000 € → 1 500 € crédités',
+      level: 'low'
+    });
   }
 
-  // ── PEA : exonération plus-values ──
+  // ════════════════════════════════════════════
+  // Placements : PFU vs barème + PEA
+  // ════════════════════════════════════════════
   const hasPEA = chip('chips-epargne', 'PEA');
-  if (!hasPEA && plusVal > 0) {
-    const flat = Math.round(plusVal * 0.30);
-    const pea  = Math.round(plusVal * 0.172); // PS seuls après 5 ans
-    levers.push({ name: 'PEA — exonération plus-values après 5 ans', save: `${fmt(plusVal)} de PV imposés à 30 % flat tax actuellement`, gain: `Économie potentielle : ${fmt(flat - pea)}`, level: 'high' });
-    totalSavings += flat - pea;
+  if (plusVal > 0) {
+    const flatTax   = Math.round(plusVal * 0.30);            // PFU : 12,8 % IR + 17,2 % PS
+    const bareme    = Math.round(plusVal * (tmiRate + 0.172)); // barème IR + PS
+    const apressPEA = Math.round(plusVal * 0.172);           // PEA après 5 ans : PS uniquement
+    if (!hasPEA) {
+      if (tmiRate < 0.128) {
+        // Barème plus favorable si TMI < 12,8 %
+        const econBareme = flatTax - bareme;
+        reductionImpot += econBareme;
+        levers.push({
+          name: 'Option barème sur plus-values (TMI < 12,8 %)',
+          save: `PFU : ${fmt(flatTax)} — option barème : ${fmt(bareme)} — barème plus favorable`,
+          gain: `Économie : ${fmt(econBareme)}`,
+          level: 'high'
+        });
+      } else {
+        levers.push({
+          name: 'PEA — exonération IR sur plus-values (après 5 ans)',
+          save: `${fmt(plusVal)} de PV à 30 % PFU → 17,2 % PS seulement dans un PEA`,
+          gain: `Potentiel : ${fmt(flatTax - apressPEA)} économisés`,
+          level: 'high'
+        });
+      }
+    }
   } else if (!hasPEA) {
-    levers.push({ name: 'Ouvrir un PEA', save: 'Plus-values exonérées d\'IR après 5 ans (PS dus uniquement)', gain: 'Stratégique long terme', level: 'mid' });
+    levers.push({
+      name: 'Ouvrir un PEA',
+      save: 'Plus-values exonérées d\'IR après 5 ans (PS 17,2 % uniquement)',
+      gain: 'Stratégique long terme',
+      level: 'mid'
+    });
   }
 
-  // ── Assurance-vie ──
   const hasAV = chip('chips-epargne', 'Assurance-vie');
   if (!hasAV) {
-    levers.push({ name: 'Assurance-vie', save: 'Abattement de 4 600 € / 9 200 € après 8 ans, transmission optimisée', gain: 'Fiscalité allégée', level: 'low' });
+    levers.push({
+      name: 'Assurance-vie',
+      save: 'Abattement annuel 4 600 € (9 200 € couple) après 8 ans — transmission hors succession',
+      gain: 'Fiscalité allégée',
+      level: 'low'
+    });
   }
 
-  // Calcul final
-  const irApres = Math.max(0, irBase - totalSavings);
+  // ── Calcul final ──
+  // irBrut → irApresDeductions (après déductions base) → irFinal (après réductions + crédits)
+  const irFinal        = Math.max(0, irApresDeductions - reductionImpot - creditImpot);
+  const totalEconomies = Math.max(0, irBrut - irFinal);
 
-  document.getElementById('savings-amount').textContent = fmt(Math.round(totalSavings));
-  document.getElementById('tax-current').textContent    = fmt(Math.round(irBase));
-  document.getElementById('tax-after').textContent      = fmt(Math.max(0, Math.round(irApres)));
+  document.getElementById('savings-amount').textContent = fmt(Math.round(totalEconomies));
+  document.getElementById('tax-current').textContent    = fmt(Math.round(irBrut));
+  document.getElementById('tax-after').textContent      = fmt(Math.round(irFinal));
   document.getElementById('tmi').textContent            = tmiLabel;
   document.getElementById('confidence-tag').textContent = 'Estimation';
 
@@ -1281,14 +1442,14 @@ function computeEnfant() {
   // ── SCÉNARIO A : RATTACHEMENT ──
   // Le revenu de l'enfant s'ajoute au foyer fiscal du parent
   const revFoyerA = revTotal + revEnfantNet;
-  const irParentA = calcIR(revFoyerA, partsAvecRattach);
+  const irParentA = calcIRFinal(revFoyerA, partsAvecRattach, married, parentIsole);
   const totalA    = irParentA; // pas d'IR séparé pour l'enfant
 
   // ── SCÉNARIO B : DÉCLARATION SÉPARÉE ──
   const pensionDeductible = Math.min(pension, 6674);
   const revParentB = Math.max(0, revTotal - pensionDeductible);
-  const irParentB  = calcIR(revParentB, partsBase);
-  const irEnfantB  = calcIR(revEnfantNet, 1);
+  const irParentB  = calcIRFinal(revParentB, partsBase, married, parentIsole);
+  const irEnfantB  = calcIRFinal(revEnfantNet, 1, false, false);
   const totalB     = irParentB + irEnfantB;
 
   // ── AFFICHAGE ──

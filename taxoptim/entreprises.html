@@ -810,13 +810,13 @@ function calcIS(resultat) {
 }
 
 function compute() {
-  const ca          = val('ca');
-  const resultat    = val('resultat');
-  const remDirigeant= val('rem-dirigeant');
-  const dividendes  = val('dividendes');
-  const deficit     = val('deficit');
-  const rdDepenses  = val('rd-depenses');
-  const investiss   = val('investissements');
+  const ca           = val('ca');
+  const resultat     = val('resultat');
+  const remDirigeant = val('rem-dirigeant');
+  const dividendes   = val('dividendes');
+  const deficit      = val('deficit');
+  const rdDepenses   = val('rd-depenses');
+  const investiss    = val('investissements');
 
   if (resultat <= 0) {
     ['savings-amount','is-current','is-after','taux-is','cir-est'].forEach(id => {
@@ -827,83 +827,100 @@ function compute() {
     return;
   }
 
-  // IS de base (après déficit reportable)
-  const resultatNet = Math.max(0, resultat - deficit);
-  const isBase = calcIS(resultatNet);
-  let totalSavings = 0;
-  let cirEst = 0;
+  // ── IS de base (avant toute optimisation) ──
+  const isBase = calcIS(resultat);
   const levers = [];
 
-  // ── CIR / CII ──
-  const cirDeclare = chip('chips-cir', 'déjà déclaré');
+  // ════════════════════════════════════════════
+  // TYPE 1 — Déductions de la base imposable
+  // Réduisent le résultat taxable → IS recalculé
+  // ════════════════════════════════════════════
+  let deductionBase = 0;
+
+  // Déficit reportable
+  if (deficit > 0) {
+    const defDeductible = Math.min(deficit, resultat);
+    deductionBase += defDeductible;
+    const defSaving = Math.round(calcIS(resultat) - calcIS(Math.max(0, resultat - defDeductible)));
+    levers.push({ name: 'Report de déficit imputé', save: `${fmt(deficit)} de pertes antérieures déduites`, gain: fmt(defSaving), level: 'high' });
+  }
+
+  // Amortissement accéléré des investissements matériels
+  if (investiss > 0) {
+    const amortDeductible = Math.round(investiss * 0.25); // déduction additionnelle estimée en année 1
+    deductionBase += amortDeductible;
+    const amortSaving = Math.round(calcIS(resultat) - calcIS(Math.max(0, resultat - amortDeductible)));
+    levers.push({ name: 'Amortissement accéléré des équipements', save: `${fmt(investiss)} d'investissements — déduction additionnelle estimée ${fmt(amortDeductible)}`, gain: fmt(amortSaving), level: 'mid' });
+  }
+
+  // Épargne retraite dirigeant (PER / Madelin / Article 83)
+  const hasRetraite = chip('chips-retraite', 'PER') || chip('chips-retraite', 'Madelin') || chip('chips-retraite', 'Article');
+  if (!hasRetraite) {
+    const maxRetraite = Math.min(resultat * 0.10, 35194);
+    deductionBase += maxRetraite;
+    const retrSaving = Math.round(calcIS(resultat) - calcIS(Math.max(0, resultat - maxRetraite)));
+    levers.push({ name: 'PER Entreprise / Madelin dirigeant', save: `Jusqu'à ${fmt(Math.round(maxRetraite))} déductibles du résultat (10 % du bénéfice, plafond 35 194 €)`, gain: fmt(retrSaving), level: 'mid' });
+  }
+
+  // ── IS après déductions de base ──
+  const resultatApresDeductions = Math.max(0, resultat - deductionBase);
+  const isApresDeductions = calcIS(resultatApresDeductions);
+
+  // ════════════════════════════════════════════
+  // TYPE 3 — Crédits d'impôt (imputés directement sur l'IS)
+  // ════════════════════════════════════════════
+  let creditImpot = 0;
+  let cirEst = 0;
+
+  const cirDeclare    = chip('chips-cir', 'déjà déclaré');
   const cirNonDeclare = chip('chips-cir', 'non déclaré');
-  const cirIncertain = chip('chips-cir', 'Incertain');
-  const cirNon = chip('chips-cir', 'Non');
+  const cirIncertain  = chip('chips-cir', 'Incertain');
+  const cirNon        = chip('chips-cir', 'Non');
 
   if (rdDepenses > 0) {
     cirEst = Math.round(Math.min(rdDepenses, 100000000) * 0.30);
-    totalSavings += cirEst;
+    creditImpot += cirEst;
     levers.push({ name: 'Crédit d\'Impôt Recherche — 30 %', save: `${fmt(rdDepenses)} de dépenses R&D éligibles`, gain: fmt(cirEst), level: 'high' });
   } else if (cirNonDeclare || cirIncertain) {
     const potentiel = Math.round(resultat * 0.08);
     cirEst = potentiel;
-    totalSavings += potentiel;
+    creditImpot += potentiel;
     levers.push({ name: 'CIR — potentiel non déclaré', save: 'Dépenses R&D probables à identifier et valoriser', gain: `~${fmt(potentiel)} estimés`, level: 'high' });
   }
 
-  // ── Investissements matériels ──
-  if (investiss > 0) {
-    const amortSaving = Math.round(investiss * 0.25 * 0.25);
-    totalSavings += amortSaving;
-    levers.push({ name: 'Amortissement accéléré des équipements', save: `${fmt(investiss)} d'investissements amortissables`, gain: fmt(amortSaving), level: 'mid' });
-  }
+  // ── IS final et économies totales ──
+  const isFinal      = Math.max(0, isApresDeductions - creditImpot);
+  const totalSavings = Math.max(0, isBase - isFinal);
+  const tauxEffectif = resultat > 0 ? ((isFinal / resultat) * 100).toFixed(1) + ' %' : '—';
 
-  // ── Déficit reportable ──
-  if (deficit > 0) {
-    const deficitSaving = Math.round(Math.min(deficit, resultat) * 0.25);
-    totalSavings += deficitSaving;
-    levers.push({ name: 'Report de déficit imputé', save: `${fmt(deficit)} de pertes antérieures déduites`, gain: fmt(deficitSaving), level: 'high' });
-  }
+  // ════════════════════════════════════════════
+  // Leviers informationnels (non imputés sur IS)
+  // ════════════════════════════════════════════
 
-  // ── Holding (régime mère-fille) ──
+  // Holding — régime mère-fille (réduit l'IS au niveau de la holding, pas de la filiale)
   const hasHolding = chip('chips-is', 'Holding');
   if (!hasHolding && dividendes > 0) {
     const holdingSaving = Math.round(dividendes * 0.25 * 0.95);
-    totalSavings += holdingSaving;
-    levers.push({ name: 'Holding — régime mère-fille', save: `${fmt(dividendes)} de dividendes : IS à 5 % seulement (quote-part de frais)`, gain: fmt(holdingSaving), level: 'high' });
+    levers.push({ name: 'Holding — régime mère-fille', save: `${fmt(dividendes)} de dividendes : IS à 5 % seulement (quote-part de frais) au niveau de la holding`, gain: `~${fmt(holdingSaving)}`, level: 'high' });
   } else if (!hasHolding && resultat > 100000) {
-    levers.push({ name: 'Création d\'une holding', save: 'Optimisation de la remontée de trésorerie et transmission', gain: 'Stratégique', level: 'mid' });
+    levers.push({ name: 'Création d\'une holding', save: 'Optimisation de la remontée de trésorerie et de la transmission', gain: 'Stratégique', level: 'mid' });
   }
 
-  // ── Arbitrage rémunération / dividendes ──
+  // Arbitrage rémunération / dividendes
   if (remDirigeant > 0 && dividendes === 0) {
-    levers.push({ name: 'Arbitrage rémunération / dividendes', save: 'Les dividendes en SAS sont soumis à la flat tax 30 % (vs charges sociales ~45 % sur salaire)', gain: 'À modéliser selon TMI', level: 'mid' });
+    levers.push({ name: 'Arbitrage rémunération / dividendes', save: 'Dividendes en SAS : flat tax 30 % vs charges sociales ~45 % sur salaire', gain: 'À modéliser selon TMI', level: 'mid' });
   }
 
-  // ── Épargne retraite dirigeant ──
-  const hasRetraite = chip('chips-retraite', 'PER') || chip('chips-retraite', 'Madelin') || chip('chips-retraite', 'Article');
-  if (!hasRetraite) {
-    const maxRetraite = Math.min(resultat * 0.10, 35194);
-    const retrSaving = Math.round(maxRetraite * 0.25);
-    totalSavings += retrSaving;
-    levers.push({ name: 'PER Entreprise / Madelin dirigeant', save: `Jusqu'à ${fmt(Math.round(maxRetraite))} déductibles du résultat`, gain: fmt(retrSaving), level: 'mid' });
-  }
-
-  // ── JEI ──
+  // JEI — exonération de cotisations patronales (hors IS)
   const hasJEI = chip('chips-labels', 'JEI');
   if (!hasJEI && !cirNon) {
-    const jeiSaving = Math.round(remDirigeant * 0.15 || resultat * 0.03);
-    totalSavings += jeiSaving;
-    levers.push({ name: 'Statut JEI — exonération cotisations patronales', save: 'Pour entreprises innovantes de moins de 11 ans', gain: `~${fmt(jeiSaving)}`, level: 'low' });
+    const jeiEst = Math.round((remDirigeant || resultat * 0.20) * 0.15);
+    levers.push({ name: 'Statut JEI — exonération cotisations patronales', save: 'Pour entreprises innovantes de moins de 11 ans — économie sur charges sociales (hors IS)', gain: `~${fmt(jeiEst)}`, level: 'low' });
   }
-
-  // ── IS calculé après optimisations ──
-  const isApresOptim = Math.max(0, calcIS(Math.max(0, resultatNet - totalSavings + cirEst)) - cirEst);
-  const tauxEffectif = resultat > 0 ? ((isApresOptim / resultat) * 100).toFixed(1) + ' %' : '—';
 
   document.getElementById('savings-amount').textContent = fmt(Math.round(totalSavings));
   document.getElementById('is-current').textContent     = fmt(Math.round(isBase));
-  document.getElementById('is-after').textContent       = fmt(Math.max(0, Math.round(isApresOptim)));
+  document.getElementById('is-after').textContent       = fmt(Math.round(isFinal));
   document.getElementById('taux-is').textContent        = tauxEffectif;
   document.getElementById('cir-est').textContent        = cirEst > 0 ? fmt(cirEst) : 'Non identifié';
   document.getElementById('confidence-tag').textContent = 'Estimation';
