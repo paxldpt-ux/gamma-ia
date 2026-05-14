@@ -9,18 +9,19 @@
 
     :root {
       --accent: #1e3a5f;
-      --accent-hover: #2d6499;
+      --accent-hover: #2d5a96;
       --accent-light: #5a8ec4;
       --bg: #f8f9fc;
-      --bg-alt: #eef0f6;
-      --text: #111827;
-      --muted: #6b7280;
-      --subtle: #9ca3af;
+      --bg-alt: #f0f2f8;
+      --text: #0f172a;
+      --muted: #64748b;
+      --subtle: #94a3b8;
       --surface: #ffffff;
-      --border: rgba(17,24,39,0.07);
-      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-      --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
-      --shadow-lg: 0 24px 64px rgba(0,0,0,0.1);
+      --border: rgba(15,23,42,0.09);
+      --border-strong: rgba(15,23,42,0.14);
+      --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -90,6 +91,24 @@
 
     .nav-link:hover { color: var(--text); }
 
+    .nav-cta {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      padding: 0.5rem 1.15rem;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #ffffff;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+    .nav-cta:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(30,58,95,0.25);
+    }
+
     .contact-wrap { position: relative; }
 
     .contact-dropdown {
@@ -140,25 +159,42 @@
       justify-content: center;
       text-align: center;
       padding: 7rem 2rem 5rem;
+      background:
+        radial-gradient(ellipse 90% 60% at 50% -5%, rgba(30,58,95,0.09) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 20% 80%, rgba(90,142,196,0.05) 0%, transparent 60%);
     }
 
     .eyebrow {
-      font-size: 0.68rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
       font-weight: 600;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 1.75rem;
+      background: rgba(30,58,95,0.06);
+      border: 1px solid rgba(30,58,95,0.16);
+      padding: 0.32rem 0.85rem 0.32rem 0.65rem;
+      border-radius: 99px;
+      margin-bottom: 2rem;
       opacity: 0;
       animation: up 0.8s ease 0.2s forwards;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
     }
 
     .hero-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-size: clamp(3rem, 8vw, 6.5rem);
       font-weight: 700;
-      line-height: 1.04;
-      letter-spacing: -0.04em;
+      line-height: 1.02;
+      letter-spacing: -0.05em;
       margin-bottom: 1.5rem;
       color: var(--text);
       opacity: 0;
@@ -174,11 +210,11 @@
     }
 
     .hero-sub {
-      max-width: 500px;
+      max-width: 480px;
       font-size: 1.05rem;
-      line-height: 1.75;
+      line-height: 1.8;
       color: var(--muted);
-      margin-bottom: 4rem;
+      margin-bottom: 3.5rem;
       opacity: 0;
       animation: up 0.9s ease 0.5s forwards;
     }
@@ -196,7 +232,7 @@
     .card {
       position: relative;
       overflow: hidden;
-      width: 286px;
+      width: 320px;
       padding: 2.25rem 2rem;
       border-radius: 16px;
       border: 1px solid var(--border);
@@ -229,13 +265,13 @@
 
     .card-icon {
       width: 44px; height: 44px;
-      border-radius: 10px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, rgba(30,58,95,0.08), rgba(90,142,196,0.08));
+      border: 1px solid rgba(30,58,95,0.12);
       margin-bottom: 1.5rem;
     }
 
@@ -276,6 +312,42 @@
     }
 
     .card:hover .card-arrow { gap: 0.65rem; }
+
+    /* STATS BAND */
+    .stats-band {
+      position: relative; z-index: 10;
+      display: flex;
+      justify-content: center;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      margin-bottom: 5rem;
+    }
+    .stat-item {
+      flex: 0 0 auto;
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .stat-label {
+      font-size: 0.76rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.4;
+    }
 
     /* SUBTLE DIVIDER */
     .divider {
@@ -319,9 +391,9 @@
 
     .why-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-size: clamp(1.9rem, 3.5vw, 2.6rem);
       font-weight: 700;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.04em;
       margin-bottom: 0.75rem;
       color: var(--text);
     }
@@ -329,18 +401,20 @@
     .why-sub {
       color: var(--muted);
       font-size: 0.95rem;
-      line-height: 1.7;
+      line-height: 1.75;
+      max-width: 480px;
+      margin: 0 auto;
     }
 
     .pillars {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 3fr 2fr;
       gap: 1rem;
     }
 
     .pillar {
-      padding: 2rem;
-      border-radius: 14px;
+      padding: 2.25rem 2rem;
+      border-radius: 16px;
       border: 1px solid var(--border);
       background: var(--surface);
       box-shadow: var(--shadow);
@@ -350,21 +424,58 @@
     }
 
     .pillar.visible { opacity: 1; transform: translateY(0); }
-    .pillar:hover { box-shadow: var(--shadow-md); border-color: rgba(30,58,95,0.12); }
+    .pillar:hover { box-shadow: var(--shadow-md); border-color: var(--border-strong); }
 
-    .pillar-icon { font-size: 1.4rem; margin-bottom: 1rem; }
+    /* 3ème pilier pleine largeur */
+    .pillar:nth-child(3) {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0 2rem;
+      align-items: start;
+    }
+    .pillar:nth-child(3) .pillar-header {
+      display: contents;
+    }
+    .pillar:nth-child(3) .pillar-body {
+      grid-column: 2;
+    }
+    .pillar:nth-child(3) .pillar-num {
+      grid-row: 1;
+    }
+    .pillar:nth-child(3) .pillar-title {
+      grid-column: 2; font-size: 1.05rem;
+    }
+
+    .pillar-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(30,58,95,0.07);
+      border: 1px solid rgba(30,58,95,0.14);
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
 
     .pillar-title {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 1rem;
       font-weight: 600;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.6rem;
       color: var(--text);
+      letter-spacing: -0.02em;
     }
 
     .pillar-desc {
-      font-size: 0.83rem;
-      line-height: 1.65;
+      font-size: 0.84rem;
+      line-height: 1.7;
       color: var(--muted);
     }
 
@@ -372,14 +483,52 @@
     footer {
       position: relative;
       z-index: 10;
-      padding: 1.75rem 3.5rem;
+      padding: 3rem 3.5rem 2rem;
       border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 2rem;
+      padding-bottom: 2rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .footer-brand p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-top: 0.75rem;
+      max-width: 280px;
+    }
+    .footer-col h4 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      margin-bottom: 1rem;
+    }
+    .footer-col a {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 0.5rem;
+      transition: color 0.15s;
+    }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-size: 0.75rem;
-      color: var(--muted);
-      background: var(--surface);
+      color: var(--subtle);
     }
 
     /* About */
@@ -392,11 +541,12 @@
     .about-text p { font-size: 0.9rem; line-height: 1.85; color: var(--muted); margin-bottom: 1rem; }
     .about-text p strong { color: var(--text); }
     .about-sources { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.25rem; }
-    .about-tag { font-size: 0.68rem; padding: 0.2rem 0.55rem; border-radius: 20px; background: var(--bg-alt); border: 1px solid var(--border); color: var(--muted); font-weight: 500; }
+    .about-tag { font-size: 0.68rem; padding: 0.22rem 0.6rem; border-radius: 6px; background: var(--bg-alt); border: 1px solid var(--border); color: var(--muted); font-weight: 600; letter-spacing: 0.03em; }
     .about-stats { display: flex; flex-direction: column; gap: 0.6rem; }
-    .about-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .about-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1.1rem; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); }
+    .about-stat-row:hover { border-color: var(--border-strong); }
     .about-stat-label { font-size: 0.82rem; color: var(--muted); }
-    .about-stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--accent); }
+    .about-stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; }
 
     /* Cookie banner */
     .cookie-banner {
@@ -416,8 +566,20 @@
     .cookie-accept { background: var(--accent); color: #fff; }
     .cookie-decline { background: transparent; border: 1px solid var(--border) !important; color: var(--muted); }
 
+    @media(max-width:900px){
+      .stats-band { flex-wrap: wrap; }
+      .stat-item { width: 50%; border-right: none; border-bottom: 1px solid var(--border); }
+      .stat-item:nth-child(odd) { border-right: 1px solid var(--border); }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+      .footer-brand { grid-column: 1 / -1; }
+      .pillars { grid-template-columns: 1fr; }
+      .pillar:nth-child(3) { grid-template-columns: 28px 1fr; }
+    }
     @media(max-width:700px){
       .about-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .stat-item { width: 100%; border-right: none; }
+      .stat-item:nth-child(odd) { border-right: none; }
     }
 
     @keyframes up {
@@ -452,9 +614,15 @@
       position: relative; z-index: 10;
       max-width: 860px; margin: 0 auto 5rem; padding: 0 2rem; text-align: center;
     }
-    .demo-label { font-size: 0.67rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
-    .demo-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1rem,2vw,1.35rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.6rem; color: var(--text); }
-    .demo-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 2rem; }
+    .demo-label {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--accent); background: rgba(30,58,95,0.06); border: 1px solid rgba(30,58,95,0.15);
+      padding: 0.28rem 0.8rem 0.28rem 0.65rem; border-radius: 99px; margin-bottom: 1.25rem;
+    }
+    .demo-label::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+    .demo-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.5rem,3vw,2.2rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.75rem; color: var(--text); }
+    .demo-sub { font-size: 0.95rem; color: var(--muted); margin-bottom: 2.5rem; line-height: 1.7; }
 
     /* Window — fond blanc, cohérent avec le site */
     .demo-window {
@@ -563,6 +731,7 @@
         <a href="mailto:paxl.dpt@gmail.com">✉️ paxl.dpt@gmail.com</a>
       </div>
     </div>
+    <a class="nav-cta" href="#" onclick="return typeof GammaAuth!=='undefined' ? (GammaAuth.showModal(()=>{}), false) : true">Commencer →</a>
   </div>
 </nav>
 
@@ -595,6 +764,26 @@
     </a>
   </div>
 </section>
+
+<!-- STATS BAND -->
+<div class="stats-band">
+  <div class="stat-item">
+    <div class="stat-num">2 000+</div>
+    <div class="stat-label">Dispositifs fiscaux couverts</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">45 k+</div>
+    <div class="stat-label">Jurisprudences indexées</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">100 %</div>
+    <div class="stat-label">Légal — optimisation documentée</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">2024</div>
+    <div class="stat-label">Barème et loi de finances à jour</div>
+  </div>
+</div>
 
 <!-- DEMO SECTION -->
 
@@ -660,19 +849,19 @@
 <div class="why">
   <div class="pillars" id="pillars">
     <div class="pillar">
-      <div class="pillar-icon">⚡</div>
+      <div class="pillar-num">01</div>
       <h3 class="pillar-title">Analyse instantanée</h3>
-      <p class="pillar-desc">Notre IA parcourt plus de 2 000 dispositifs fiscaux et identifie les opportunités adaptées à votre profil en quelques secondes.</p>
+      <p class="pillar-desc">Notre IA parcourt plus de 2 000 dispositifs fiscaux et identifie les opportunités adaptées à votre profil en quelques secondes — sans cabinet, sans rendez-vous.</p>
     </div>
     <div class="pillar">
-      <div class="pillar-icon">🔒</div>
-      <h3 class="pillar-title">100 % légal</h3>
-      <p class="pillar-desc">Chaque recommandation est validée par nos juristes. Toutes les stratégies proposées sont conformes à la législation en vigueur.</p>
+      <div class="pillar-num">02</div>
+      <h3 class="pillar-title">100 % légal, sources citées</h3>
+      <p class="pillar-desc">Chaque recommandation cite son article CGI ou BOFiP. Uniquement de l'optimisation documentée, zéro évasion.</p>
     </div>
     <div class="pillar">
-      <div class="pillar-icon">🌍</div>
+      <div class="pillar-num">03</div>
       <h3 class="pillar-title">Couverture internationale</h3>
-      <p class="pillar-desc">Traités fiscaux, holdings transfrontaliers, conventions bilatérales — nous gérons la complexité fiscale européenne et internationale.</p>
+      <p class="pillar-desc">Traités fiscaux, holdings transfrontaliers, conventions bilatérales — nous gérons la complexité fiscale européenne et internationale, là où les outils généralistes s'arrêtent.</p>
     </div>
   </div>
 </div>
@@ -708,8 +897,28 @@
 </section>
 
 <footer>
-  <div class="logo" style="font-size:1rem"><span class="logo-gamma-icon">γ</span><span class="logo-text">Gamma <em>IA</em></span></div>
-  <span>© 2026 Gamma IA — Usage personnel</span>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo"><span class="logo-gamma-icon">γ</span><span class="logo-text">Gamma <em>IA</em></span></div>
+      <p>L'expertise fiscale de qualité, accessible à tous — propulsée par l'intelligence artificielle.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Produit</h4>
+      <a href="particuliers.html">Simulateur particuliers</a>
+      <a href="entreprises.html">Simulateur entreprises</a>
+      <a href="agent-conseil.html">Agent IA</a>
+    </div>
+    <div class="footer-col">
+      <h4>Légal</h4>
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="mentions-legales.html#rgpd">RGPD</a>
+      <a href="mailto:paxl.dpt@gmail.com">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Gamma IA</span>
+    <span>Fait avec rigueur fiscale 🇫🇷</span>
+  </div>
 </footer>
 
 <div class="cookie-banner" id="cookie-banner">
