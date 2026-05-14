@@ -292,31 +292,17 @@
 
 <script src="auth.js"></script>
 <script>
-/* ── Auth gate ── */
+/* ── Auth gate + nav ── */
 (function() {
-  function gate() {
-    if (typeof GammaAuth !== 'undefined' && !GammaAuth.isLogged()) {
-      GammaAuth.requireAuth(function() { updateNavUser(); });
-    } else {
-      updateNavUser();
+  function init() {
+    GammaAuth.initNav();
+    if (!GammaAuth.isLogged()) {
+      GammaAuth.requireAuth(() => GammaAuth._updateNavState());
     }
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', gate);
-  else gate();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();
-
-function updateNavUser() {
-  if (typeof GammaAuth === 'undefined') return;
-  const u = GammaAuth.getUser();
-  if (!u) return;
-  const nav = document.querySelector('nav');
-  if (!nav || document.getElementById('nav-user')) return;
-  const span = document.createElement('span');
-  span.id = 'nav-user';
-  span.style.cssText = 'font-size:.78rem;color:#6b7fa0;display:flex;align-items:center;gap:.6rem;';
-  span.innerHTML = `<span style="color:#a2bfd4;font-weight:500">${u.name || u.email}</span><button onclick="GammaAuth.logout()" style="background:none;border:1px solid rgba(110,154,181,0.2);border-radius:6px;color:#6b7fa0;font-size:.72rem;padding:.2rem .6rem;cursor:pointer;">Déconnexion</button>`;
-  nav.appendChild(span);
-}
 
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');

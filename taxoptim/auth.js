@@ -129,10 +129,6 @@ const GammaAuth = {
       <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       Continuer avec Google
     </button>
-    <button class="auth-social-btn apple-btn" id="btn-apple">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-      Continuer avec Apple
-    </button>
   </div>
 
   <div class="auth-divider">
@@ -251,10 +247,6 @@ const GammaAuth = {
     // Google
     el.querySelector('#btn-google').onclick = () => this._googleSignIn(el, onSuccess, close);
 
-    // Apple (requires Apple Dev — show info)
-    el.querySelector('#btn-apple').onclick = () => {
-      this._showError(el, 'Apple Sign In nécessite un compte Apple Developer. Utilisez Google ou email/mot de passe.');
-    };
   },
 
   async _submit(el, isLogin, onSuccess, close) {
@@ -310,5 +302,146 @@ const GammaAuth = {
     const e = el.querySelector('#auth-error');
     e.textContent = msg;
     e.style.display = 'block';
+  },
+
+  /* ── Nav account widget ── */
+  initNav() {
+    if (document.getElementById('gamma-account-wrap')) { this._updateNavState(); return; }
+
+    // Inject nav styles
+    if (!document.getElementById('gamma-nav-styles')) {
+      const s = document.createElement('style');
+      s.id = 'gamma-nav-styles';
+      s.textContent = `
+#gamma-account-wrap { position:relative; }
+.gna-btn {
+  font-size:.78rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  color:#050a12;background:#6e9ab5;border:none;border-radius:20px;
+  padding:.38rem 1.1rem;cursor:pointer;transition:background .2s;
+}
+.gna-btn:hover { background:#a2bfd4; }
+.gna-pill {
+  display:none;align-items:center;gap:.5rem;cursor:pointer;
+  padding:.28rem .65rem .28rem .32rem;border-radius:20px;
+  border:1px solid rgba(110,154,181,0.22);background:rgba(110,154,181,0.07);
+  transition:background .2s,border-color .2s;
+}
+.gna-pill:hover { background:rgba(110,154,181,0.14);border-color:rgba(110,154,181,0.4); }
+.gna-avatar {
+  width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,#6e9ab5,#3d6f8a);
+  color:#fff;font-size:.72rem;font-weight:700;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.gna-name { font-size:.82rem;font-weight:500;color:#edf2ff;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.gna-chevron { width:12px;height:12px;color:#6b7fa0;transition:transform .2s; }
+.gna-pill.open .gna-chevron { transform:rotate(180deg); }
+.gna-dropdown {
+  position:absolute;top:calc(100% + .9rem);right:0;z-index:500;
+  background:#0b1626;border:1px solid rgba(110,154,181,0.15);
+  border-radius:14px;padding:.6rem;min-width:230px;
+  box-shadow:0 24px 64px rgba(0,0,0,.65);
+  opacity:0;transform:translateY(-8px);pointer-events:none;
+  transition:opacity .22s,transform .22s;
+}
+.gna-dropdown.open { opacity:1;transform:translateY(0);pointer-events:auto; }
+.gna-header { display:flex;align-items:center;gap:.75rem;padding:.35rem .5rem .8rem; }
+.gna-avatar-lg {
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#6e9ab5,#3d6f8a);
+  color:#fff;font-size:1.05rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.gna-dname { font-size:.88rem;font-weight:600;color:#edf2ff; }
+.gna-demail { font-size:.73rem;color:#6b7fa0;margin-top:.15rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:155px; }
+.gna-badge { display:inline-block;font-size:.65rem;font-weight:600;padding:.1rem .5rem;border-radius:10px;background:rgba(110,154,181,0.12);color:#6e9ab5;border:1px solid rgba(110,154,181,0.2);margin-top:.3rem; }
+.gna-sep { height:1px;background:rgba(110,154,181,0.1);margin:.4rem 0; }
+.gna-link {
+  display:flex;align-items:center;gap:.6rem;padding:.48rem .6rem;
+  border-radius:8px;font-size:.82rem;color:#8ba5be;
+  text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;
+  transition:background .15s,color .15s;
+}
+.gna-link:hover { background:rgba(110,154,181,0.09);color:#edf2ff; }
+.gna-link.danger:hover { background:rgba(239,68,68,0.08);color:#fca5a5; }
+.gna-link svg { width:15px;height:15px;flex-shrink:0; }
+      `;
+      document.head.appendChild(s);
+    }
+
+    // Build widget
+    const wrap = document.createElement('div');
+    wrap.id = 'gamma-account-wrap';
+    wrap.innerHTML = `
+      <button class="gna-btn" id="gna-signin-btn">Se connecter</button>
+      <div class="gna-pill" id="gna-pill">
+        <div class="gna-avatar" id="gna-av"></div>
+        <span class="gna-name" id="gna-nm"></span>
+        <svg class="gna-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="gna-dropdown" id="gna-dropdown">
+        <div class="gna-header">
+          <div class="gna-avatar-lg" id="gna-av-lg"></div>
+          <div>
+            <div class="gna-dname" id="gna-dn"></div>
+            <div class="gna-demail" id="gna-de"></div>
+            <span class="gna-badge">Compte gratuit</span>
+          </div>
+        </div>
+        <div class="gna-sep"></div>
+        <a class="gna-link" href="compte.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Mon compte
+        </a>
+        <a class="gna-link" href="agent-conseil.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M8 8h5"/></svg>
+          Agent fiscal IA
+        </a>
+        <a class="gna-link" href="estimation.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Simulateur
+        </a>
+        <div class="gna-sep"></div>
+        <button class="gna-link danger" id="gna-logout">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Déconnexion
+        </button>
+      </div>`;
+
+    // Append to nav-right (or nav)
+    const target = document.querySelector('.nav-right') || document.querySelector('nav');
+    if (target) target.appendChild(wrap);
+
+    // Events
+    document.getElementById('gna-signin-btn').onclick = () => this.showModal(() => this.initNav());
+    document.getElementById('gna-logout').onclick = () => this.logout();
+
+    const pill = document.getElementById('gna-pill');
+    const drop = document.getElementById('gna-dropdown');
+    pill.onclick = () => { pill.classList.toggle('open'); drop.classList.toggle('open'); };
+    document.addEventListener('click', e => {
+      if (!wrap.contains(e.target)) { pill.classList.remove('open'); drop.classList.remove('open'); }
+    });
+
+    this._updateNavState();
+  },
+
+  _updateNavState() {
+    const u = this.getUser();
+    const btn  = document.getElementById('gna-signin-btn');
+    const pill = document.getElementById('gna-pill');
+    if (!btn || !pill) return;
+    if (u) {
+      const initials = ((u.name || u.email)[0]).toUpperCase();
+      btn.style.display = 'none';
+      pill.style.display = 'flex';
+      ['gna-av','gna-av-lg'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=initials; });
+      const nm = document.getElementById('gna-nm'); if(nm) nm.textContent = u.name || u.email.split('@')[0];
+      const dn = document.getElementById('gna-dn'); if(dn) dn.textContent = u.name || u.email.split('@')[0];
+      const de = document.getElementById('gna-de'); if(de) de.textContent = u.email;
+    } else {
+      btn.style.display = '';
+      pill.style.display = 'none';
+    }
   }
 };
