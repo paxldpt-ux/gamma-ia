@@ -8,18 +8,21 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
     :root {
-      --accent: #6e9ab5;
-      --accent-light: #a2bfd4;
-      --accent-dark: #3d6f8a;
-      --bg: #050a12;
-      --surface: #0c1525;
-      --surface2: #111c2e;
-      --text: #edf2ff;
-      --muted: #6b7fa0;
-      --glass: rgba(255,255,255,0.03);
-      --border: rgba(110,154,181,0.12);
-      --user-bg: rgba(110,154,181,0.12);
-      --ai-bg: rgba(255,255,255,0.03);
+      --accent: #1e3a5f;
+      --accent-hover: #2d6499;
+      --accent-light: #5a8ec4;
+      --bg: #f8f9fc;
+      --bg-alt: #eef0f6;
+      --surface: #ffffff;
+      --surface2: #f0f2f8;
+      --text: #111827;
+      --muted: #6b7280;
+      --subtle: #9ca3af;
+      --border: rgba(17,24,39,0.07);
+      --shadow: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+      --user-bg: rgba(30,58,95,0.07);
+      --ai-bg: #ffffff;
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,10 +50,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.25rem 3.5rem;
-      background: rgba(5,10,18,0.9);
+      padding: 1rem 3.5rem;
+      background: rgba(248,249,252,0.98);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
       flex-shrink: 0;
     }
 
@@ -82,13 +86,13 @@
       gap: 0.5rem;
       font-size: 0.72rem;
       font-weight: 600;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--accent);
-      border: 1px solid rgba(110,154,181,0.25);
+      border: 1px solid rgba(30,58,95,0.18);
       padding: 0.3rem 0.8rem;
       border-radius: 100px;
-      background: rgba(110,154,181,0.06);
+      background: rgba(30,58,95,0.05);
     }
 
     .agent-badge .dot {
@@ -137,12 +141,12 @@
       flex-direction: column;
       gap: 1.25rem;
       scrollbar-width: thin;
-      scrollbar-color: rgba(110,154,181,0.2) transparent;
+      scrollbar-color: rgba(30,58,95,0.15) transparent;
     }
 
     .messages::-webkit-scrollbar { width: 4px; }
     .messages::-webkit-scrollbar-track { background: transparent; }
-    .messages::-webkit-scrollbar-thumb { background: rgba(110,154,181,0.2); border-radius: 2px; }
+    .messages::-webkit-scrollbar-thumb { background: rgba(30,58,95,0.15); border-radius: 2px; }
 
     .welcome {
       text-align: center;
@@ -157,8 +161,8 @@
       width: 64px;
       height: 64px;
       border-radius: 16px;
-      background: rgba(110,154,181,0.08);
-      border: 1px solid rgba(110,154,181,0.2);
+      background: rgba(30,58,95,0.06);
+      border: 1px solid rgba(30,58,95,0.1);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -169,13 +173,14 @@
     .welcome h2 {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 1.6rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
     }
 
     .welcome h2 em {
       font-style: normal;
-      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -201,17 +206,18 @@
       padding: 0.45rem 1rem;
       border-radius: 100px;
       border: 1px solid var(--border);
-      background: var(--glass);
+      background: var(--surface);
       color: var(--muted);
       cursor: pointer;
-      transition: all 0.25s;
-      backdrop-filter: blur(12px);
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
     }
 
     .suggestion:hover {
-      border-color: rgba(110,154,181,0.4);
-      color: var(--accent-light);
-      background: rgba(110,154,181,0.06);
+      border-color: rgba(30,58,95,0.2);
+      color: var(--accent);
+      background: rgba(30,58,95,0.04);
+      box-shadow: var(--shadow-md);
     }
 
     /* ── Mode cards ── */
@@ -231,10 +237,10 @@
       padding: 2rem 1.75rem 0;
       border-radius: 18px;
       border: 1px solid var(--border);
-      background: var(--glass);
-      backdrop-filter: blur(24px);
+      background: var(--surface);
+      box-shadow: var(--shadow);
       cursor: pointer;
-      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
       text-align: left;
       display: flex;
       flex-direction: column;
@@ -244,16 +250,16 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
       opacity: 0;
       transition: opacity 0.3s;
     }
 
     .mode-card:hover {
       transform: translateY(-6px);
-      border-color: rgba(110,154,181,0.35);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(110,154,181,0.07);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+      border-color: rgba(30,58,95,0.15);
     }
 
     .mode-card:hover::before { opacity: 1; }
@@ -263,8 +269,8 @@
       border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.3rem;
-      background: rgba(110,154,181,0.08);
-      border: 1px solid rgba(110,154,181,0.15);
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
       margin-bottom: 1.25rem;
       flex-shrink: 0;
     }
@@ -306,7 +312,7 @@
       padding: 0.7rem 0;
       overflow: hidden;
       white-space: nowrap;
-      background: rgba(0,0,0,0.15);
+      background: var(--bg-alt);
     }
 
     .mode-ticker-inner {
@@ -350,13 +356,13 @@
     }
 
     .avatar.ai {
-      background: rgba(110,154,181,0.1);
-      border: 1px solid rgba(110,154,181,0.2);
+      background: rgba(30,58,95,0.07);
+      border: 1px solid rgba(30,58,95,0.1);
     }
 
     .avatar.user {
-      background: rgba(110,154,181,0.15);
-      border: 1px solid rgba(110,154,181,0.25);
+      background: rgba(30,58,95,0.1);
+      border: 1px solid rgba(30,58,95,0.15);
     }
 
     .bubble {
@@ -370,13 +376,13 @@
 
     .message.user .bubble {
       background: var(--user-bg);
-      border-color: rgba(110,154,181,0.2);
+      border-color: rgba(30,58,95,0.1);
       border-bottom-right-radius: 4px;
     }
 
     .message.ai .bubble {
       background: var(--ai-bg);
-      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
       border-bottom-left-radius: 4px;
     }
 
@@ -402,21 +408,21 @@
     }
     .bubble li { margin-bottom: 0.25em; }
 
-    .bubble strong { color: var(--accent-light); font-weight: 600; }
+    .bubble strong { color: var(--accent); font-weight: 600; }
     .bubble em { color: var(--muted); font-style: italic; }
 
     .bubble code {
       font-family: 'Courier New', monospace;
       font-size: 0.82em;
-      background: rgba(110,154,181,0.1);
-      border: 1px solid rgba(110,154,181,0.15);
+      background: rgba(30,58,95,0.07);
+      border: 1px solid rgba(30,58,95,0.1);
       padding: 0.1em 0.4em;
       border-radius: 4px;
-      color: var(--accent-light);
+      color: var(--accent);
     }
 
     .bubble pre {
-      background: rgba(0,0,0,0.3);
+      background: #f1f3f9;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.9rem 1rem;
@@ -440,8 +446,8 @@
     .bubble th {
       text-align: left;
       padding: 0.5rem 0.75rem;
-      border-bottom: 1px solid rgba(110,154,181,0.25);
-      color: var(--accent-light);
+      border-bottom: 1px solid rgba(30,58,95,0.12);
+      color: var(--accent);
       font-weight: 600;
       font-size: 0.78rem;
       text-transform: uppercase;
@@ -453,7 +459,7 @@
       color: var(--text);
     }
     .bubble tr:last-child td { border-bottom: none; }
-    .bubble tr:hover td { background: rgba(110,154,181,0.04); }
+    .bubble tr:hover td { background: rgba(30,58,95,0.04); }
 
     .bubble blockquote {
       border-left: 2px solid var(--accent);
@@ -526,12 +532,13 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 0.75rem 0.75rem 0.75rem 1.25rem;
-      transition: border-color 0.25s;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      box-shadow: var(--shadow);
     }
 
     .input-wrap:focus-within {
-      border-color: rgba(110,154,181,0.4);
-      box-shadow: 0 0 0 3px rgba(110,154,181,0.06);
+      border-color: rgba(30,58,95,0.3);
+      box-shadow: 0 0 0 3px rgba(30,58,95,0.08);
     }
 
     textarea {
@@ -548,10 +555,10 @@
       min-height: 24px;
       overflow-y: auto;
       scrollbar-width: thin;
-      scrollbar-color: rgba(110,154,181,0.2) transparent;
+      scrollbar-color: rgba(30,58,95,0.12) transparent;
     }
 
-    textarea::placeholder { color: var(--muted); }
+    textarea::placeholder { color: var(--subtle); }
 
     .send-btn {
       width: 38px;
@@ -568,9 +575,9 @@
       transition: background 0.2s, transform 0.15s;
     }
 
-    .send-btn:hover { background: var(--accent-dark); transform: scale(1.05); }
+    .send-btn:hover { background: var(--accent-hover); transform: scale(1.05); }
     .send-btn:active { transform: scale(0.97); }
-    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .send-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 
     .send-btn svg { width: 16px; height: 16px; }
 
@@ -580,31 +587,31 @@
       border-radius: 8px;
       border: 1px solid var(--border);
       background: transparent;
-      color: var(--muted);
+      color: var(--subtle);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
-      transition: color 0.2s, border-color 0.2s;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
     }
-    .upload-btn:hover { color: var(--accent-light); border-color: rgba(110,154,181,0.35); }
+    .upload-btn:hover { color: var(--accent); border-color: rgba(30,58,95,0.2); background: rgba(30,58,95,0.04); }
 
     .input-hint {
       text-align: center;
       font-size: 0.7rem;
-      color: var(--muted);
+      color: var(--subtle);
       margin-top: 0.6rem;
-      opacity: 0.6;
+      opacity: 0.7;
     }
 
     .error-msg {
-      background: rgba(239,68,68,0.08);
-      border: 1px solid rgba(239,68,68,0.2);
+      background: #fef2f2;
+      border: 1px solid #fecaca;
       border-radius: 10px;
       padding: 0.75rem 1rem;
       font-size: 0.83rem;
-      color: #fca5a5;
+      color: #dc2626;
     }
 
     @media (max-width: 700px) {
@@ -726,29 +733,26 @@ class P {
   update() { this.x += this.vx; this.y += this.vy; this.t += 0.018; if (this.y < -10) this.init(); }
   draw() {
     ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(110,154,181,${this.a + Math.sin(this.t) * 0.06})`; ctx.fill();
+    ctx.fillStyle = `rgba(30,58,95,${this.a * 0.55 + Math.sin(this.t) * 0.03})`; ctx.fill();
   }
 }
 const pts = Array.from({ length: 55 }, () => new P());
 function frame() {
   ctx.clearRect(0, 0, W, H);
-  const g = ctx.createRadialGradient(W * .25, H * .35, 0, W * .25, H * .35, W * .65);
-  g.addColorStop(0, 'rgba(8,20,50,0.7)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   pts.forEach(p => {
     p.update(); p.draw();
     pts.forEach(q => {
       const dx = p.x - q.x, dy = p.y - q.y, d = Math.hypot(dx, dy);
       if (d < 130 && d > 0) {
         ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
-        ctx.strokeStyle = `rgba(110,154,181,${(1 - d / 130) * 0.1})`;
+        ctx.strokeStyle = `rgba(30,58,95,${(1 - d / 130) * 0.06})`;
         ctx.lineWidth = 0.5; ctx.stroke();
       }
     });
     const md = Math.hypot(p.x - mouse.x, p.y - mouse.y);
     if (md < 110) {
       ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
-      ctx.strokeStyle = `rgba(110,154,181,${(1 - md / 110) * 0.28})`;
+      ctx.strokeStyle = `rgba(30,58,95,${(1 - md / 110) * 0.14})`;
       ctx.lineWidth = 0.7; ctx.stroke();
     }
   });

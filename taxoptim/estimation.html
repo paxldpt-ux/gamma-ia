@@ -8,14 +8,19 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
     :root {
-      --accent: #6e9ab5;
-      --accent-light: #a2bfd4;
-      --accent-dark: #3d6f8a;
-      --bg: #050a12;
-      --text: #edf2ff;
-      --muted: #6b7fa0;
-      --glass: rgba(255,255,255,0.03);
-      --border: rgba(110,154,181,0.12);
+      --accent: #1e3a5f;
+      --accent-hover: #2d6499;
+      --accent-light: #5a8ec4;
+      --bg: #f8f9fc;
+      --bg-alt: #eef0f6;
+      --text: #111827;
+      --muted: #6b7280;
+      --subtle: #9ca3af;
+      --surface: #ffffff;
+      --border: rgba(17,24,39,0.07);
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+      --shadow-lg: 0 24px 64px rgba(0,0,0,0.1);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -43,20 +48,19 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.5rem 3.5rem;
-      background: rgba(5,10,18,0.85);
+      padding: 1.25rem 3.5rem;
+      background: rgba(248,249,252,0.95);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
     }
 
-    .logo { display:flex; align-items:center; gap:0.15rem;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.35rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+    .logo { display:flex; align-items:center; gap:0.4rem;
       text-decoration: none;
-      color: inherit;
     }
+    .logo-gamma-icon { font-family:Georgia,serif; font-style:italic; font-size:1.6rem; color:var(--accent); line-height:1; }
+    .logo-text { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1rem; color:var(--text); letter-spacing:-0.01em; }
+    .logo-text em { font-style:normal; color:var(--muted); font-weight:400; }
 
     .logo-gold {
       background: linear-gradient(135deg, var(--accent-light), var(--accent));
@@ -68,17 +72,16 @@
     .back-link {
       font-size: 0.82rem;
       font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      letter-spacing: 0.03em;
       color: var(--muted);
       text-decoration: none;
-      transition: color 0.3s;
+      transition: color 0.2s;
       display: flex;
       align-items: center;
       gap: 0.4rem;
     }
 
-    .back-link:hover { color: var(--accent-light); }
+    .back-link:hover { color: var(--accent); }
 
     .hero {
       position: relative;
@@ -93,7 +96,7 @@
     }
 
     .eyebrow {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: 600;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -106,24 +109,25 @@
     .hero-title {
       font-family: 'Space Grotesk', sans-serif;
       font-size: clamp(2.2rem, 5vw, 4.5rem);
-      font-weight: 600;
-      line-height: 1.08;
-      letter-spacing: -0.03em;
+      font-weight: 700;
+      line-height: 1.06;
+      letter-spacing: -0.04em;
       margin-bottom: 1.5rem;
+      color: var(--text);
       opacity: 0;
       animation: up 0.9s ease 0.35s forwards;
     }
 
     .hero-title em {
       font-style: normal;
-      background: linear-gradient(135deg, var(--accent-light), var(--accent));
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .hero-sub {
-      max-width: 500px;
+      max-width: 480px;
       font-size: 1rem;
       line-height: 1.75;
       color: var(--muted);
@@ -134,7 +138,7 @@
 
     .cards {
       display: flex;
-      gap: 1.5rem;
+      gap: 1.25rem;
       opacity: 0;
       animation: up 1s ease 0.7s forwards;
       flex-wrap: wrap;
@@ -144,16 +148,16 @@
     .card {
       position: relative;
       overflow: hidden;
-      width: 280px;
-      padding: 2.5rem 2rem;
+      width: 286px;
+      padding: 2.25rem 2rem;
       border-radius: 16px;
       border: 1px solid var(--border);
-      background: var(--glass);
-      backdrop-filter: blur(24px);
+      background: var(--surface);
+      box-shadow: var(--shadow);
       text-decoration: none;
       color: inherit;
       cursor: pointer;
-      transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
       text-align: left;
     }
 
@@ -161,36 +165,36 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
       opacity: 0;
-      transition: opacity 0.35s;
+      transition: opacity 0.3s;
     }
 
     .card:hover {
-      transform: translateY(-8px);
-      border-color: rgba(110,154,181,0.35);
-      box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 40px rgba(110,154,181,0.07);
+      transform: translateY(-7px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(30,58,95,0.14);
     }
 
     .card:hover::before { opacity: 1; }
 
     .card-icon {
-      width: 48px; height: 48px;
+      width: 44px; height: 44px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
-      background: rgba(110,154,181,0.08);
-      border: 1px solid rgba(110,154,181,0.15);
+      font-size: 1.3rem;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
       margin-bottom: 1.5rem;
     }
 
     .card-label {
-      font-size: 0.65rem;
+      font-size: 0.63rem;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.13em;
       text-transform: uppercase;
       color: var(--accent);
       margin-bottom: 0.5rem;
@@ -198,10 +202,11 @@
 
     .card-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: 600;
       margin-bottom: 0.75rem;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
+      color: var(--text);
     }
 
     .card-desc {
@@ -218,11 +223,11 @@
       font-size: 0.8rem;
       font-weight: 600;
       color: var(--accent);
-      letter-spacing: 0.04em;
-      transition: gap 0.3s;
+      letter-spacing: 0.02em;
+      transition: gap 0.25s;
     }
 
-    .card:hover .card-arrow { gap: 0.7rem; }
+    .card:hover .card-arrow { gap: 0.65rem; }
 
     footer {
       position: relative;
@@ -234,6 +239,7 @@
       justify-content: space-between;
       font-size: 0.75rem;
       color: var(--muted);
+      background: var(--surface);
     }
 
     @keyframes up {
@@ -253,7 +259,10 @@
 <canvas id="c"></canvas>
 
 <nav>
-  <a class="logo" href="index.html"><span style="font-family:Georgia,serif;font-style:italic;font-size:1.6rem;color:#6e9ab5">γ</span><span style="font-family:Space Grotesk,sans-serif;font-weight:600;font-size:1rem;color:#edf2ff;letter-spacing:-0.01em">Gamma <em style="font-style:normal;color:#6b7fa0;font-weight:400">IA</em></span></a>
+  <a class="logo" href="index.html">
+    <span class="logo-gamma-icon">γ</span>
+    <span class="logo-text">Gamma <em>IA</em></span>
+  </a>
   <a class="back-link" href="index.html">← Retour</a>
 </nav>
 
@@ -286,7 +295,10 @@
 </section>
 
 <footer>
-  <div class="logo" style="font-size:1rem"><span style="font-family:Georgia,serif;font-style:italic;font-size:1.6rem;color:#6e9ab5">γ</span><span style="font-family:Space Grotesk,sans-serif;font-weight:600;font-size:1rem;color:#edf2ff;letter-spacing:-0.01em">Gamma <em style="font-style:normal;color:#6b7fa0;font-weight:400">IA</em></span></div>
+  <a class="logo" href="index.html">
+    <span class="logo-gamma-icon">γ</span>
+    <span class="logo-text">Gamma <em>IA</em></span>
+  </a>
   <span>© 2026 Gamma IA — Usage personnel</span>
 </footer>
 
@@ -326,7 +338,7 @@ class P {
   update() { this.x += this.vx; this.y += this.vy; this.t += 0.018; if (this.y < -10) this.init(); }
   draw() {
     ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(110,154,181,${this.a + Math.sin(this.t) * 0.06})`; ctx.fill();
+    ctx.fillStyle = `rgba(30,58,95,${this.a * 0.55 + Math.sin(this.t) * 0.03})`; ctx.fill();
   }
 }
 const pts = Array.from({ length: 55 }, () => new P());
@@ -341,14 +353,14 @@ function frame() {
       const dx = p.x - q.x, dy = p.y - q.y, d = Math.hypot(dx, dy);
       if (d < 130 && d > 0) {
         ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
-        ctx.strokeStyle = `rgba(110,154,181,${(1 - d / 130) * 0.1})`;
+        ctx.strokeStyle = `rgba(30,58,95,${(1 - d / 130) * 0.06})`;
         ctx.lineWidth = 0.5; ctx.stroke();
       }
     });
     const md = Math.hypot(p.x - mouse.x, p.y - mouse.y);
     if (md < 110) {
       ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
-      ctx.strokeStyle = `rgba(110,154,181,${(1 - md / 110) * 0.28})`;
+      ctx.strokeStyle = `rgba(30,58,95,${(1 - md / 110) * 0.14})`;
       ctx.lineWidth = 0.7; ctx.stroke();
     }
   });
